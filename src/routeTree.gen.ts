@@ -10,33 +10,223 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DesignSystemRouteImport } from './routes/design-system'
+import { Route as StudentRouteImport } from './routes/student'
+import { Route as AuthDeviceRegistrationRouteImport } from './routes/auth.device-registration'
+import { Route as AuthFaceRegistrationRouteImport } from './routes/auth.face-registration'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AuthOtpRouteImport } from './routes/auth.otp'
+import { Route as AuthRegisterRouteImport } from './routes/auth.register'
+import { Route as StudentIndexRouteImport } from './routes/student.index'
+import { Route as StudentAppealsRouteImport } from './routes/student.appeals'
+import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
+import { Route as StudentHistoryRouteImport } from './routes/student.history'
+import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
+import { Route as StudentProfileRouteImport } from './routes/student.profile'
+import { Route as StudentSettingsRouteImport } from './routes/student.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignSystemRoute = DesignSystemRouteImport.update({
+  id: '/design-system',
+  path: '/design-system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentRoute = StudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthDeviceRegistrationRoute = AuthDeviceRegistrationRouteImport.update({
+  id: '/auth/device-registration',
+  path: '/auth/device-registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthFaceRegistrationRoute = AuthFaceRegistrationRouteImport.update({
+  id: '/auth/face-registration',
+  path: '/auth/face-registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOtpRoute = AuthOtpRouteImport.update({
+  id: '/auth/otp',
+  path: '/auth/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentIndexRoute = StudentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentAppealsRoute = StudentAppealsRouteImport.update({
+  id: '/appeals',
+  path: '/appeals',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentAttendanceRoute = StudentAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentHistoryRoute = StudentHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentNotificationsRoute = StudentNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentProfileRoute = StudentProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentSettingsRoute = StudentSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => StudentRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/design-system': typeof DesignSystemRoute
+  '/student': typeof StudentRouteWithChildren
+  '/auth/device-registration': typeof AuthDeviceRegistrationRoute
+  '/auth/face-registration': typeof AuthFaceRegistrationRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/student/appeals': typeof StudentAppealsRoute
+  '/student/attendance': typeof StudentAttendanceRoute
+  '/student/history': typeof StudentHistoryRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student/': typeof StudentIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/design-system': typeof DesignSystemRoute
+  '/auth/device-registration': typeof AuthDeviceRegistrationRoute
+  '/auth/face-registration': typeof AuthFaceRegistrationRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/student/appeals': typeof StudentAppealsRoute
+  '/student/attendance': typeof StudentAttendanceRoute
+  '/student/history': typeof StudentHistoryRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student': typeof StudentIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/design-system': typeof DesignSystemRoute
+  '/student': typeof StudentRouteWithChildren
+  '/auth/device-registration': typeof AuthDeviceRegistrationRoute
+  '/auth/face-registration': typeof AuthFaceRegistrationRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/student/appeals': typeof StudentAppealsRoute
+  '/student/attendance': typeof StudentAttendanceRoute
+  '/student/history': typeof StudentHistoryRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student/': typeof StudentIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/design-system'
+    | '/student'
+    | '/auth/device-registration'
+    | '/auth/face-registration'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/otp'
+    | '/auth/register'
+    | '/student/appeals'
+    | '/student/attendance'
+    | '/student/history'
+    | '/student/notifications'
+    | '/student/profile'
+    | '/student/settings'
+    | '/student/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/design-system'
+    | '/auth/device-registration'
+    | '/auth/face-registration'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/otp'
+    | '/auth/register'
+    | '/student/appeals'
+    | '/student/attendance'
+    | '/student/history'
+    | '/student/notifications'
+    | '/student/profile'
+    | '/student/settings'
+    | '/student'
+  id:
+    | '__root__'
+    | '/'
+    | '/design-system'
+    | '/student'
+    | '/auth/device-registration'
+    | '/auth/face-registration'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/otp'
+    | '/auth/register'
+    | '/student/appeals'
+    | '/student/attendance'
+    | '/student/history'
+    | '/student/notifications'
+    | '/student/profile'
+    | '/student/settings'
+    | '/student/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DesignSystemRoute: typeof DesignSystemRoute
+  StudentRoute: typeof StudentRouteWithChildren
+  AuthDeviceRegistrationRoute: typeof AuthDeviceRegistrationRoute
+  AuthFaceRegistrationRoute: typeof AuthFaceRegistrationRoute
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthOtpRoute: typeof AuthOtpRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +238,148 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/design-system': {
+      id: '/design-system'
+      path: '/design-system'
+      fullPath: '/design-system'
+      preLoaderRoute: typeof DesignSystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student': {
+      id: '/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/device-registration': {
+      id: '/auth/device-registration'
+      path: '/auth/device-registration'
+      fullPath: '/auth/device-registration'
+      preLoaderRoute: typeof AuthDeviceRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/face-registration': {
+      id: '/auth/face-registration'
+      path: '/auth/face-registration'
+      fullPath: '/auth/face-registration'
+      preLoaderRoute: typeof AuthFaceRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/otp': {
+      id: '/auth/otp'
+      path: '/auth/otp'
+      fullPath: '/auth/otp'
+      preLoaderRoute: typeof AuthOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/': {
+      id: '/student/'
+      path: '/'
+      fullPath: '/student/'
+      preLoaderRoute: typeof StudentIndexRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/appeals': {
+      id: '/student/appeals'
+      path: '/appeals'
+      fullPath: '/student/appeals'
+      preLoaderRoute: typeof StudentAppealsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/attendance': {
+      id: '/student/attendance'
+      path: '/attendance'
+      fullPath: '/student/attendance'
+      preLoaderRoute: typeof StudentAttendanceRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/history': {
+      id: '/student/history'
+      path: '/history'
+      fullPath: '/student/history'
+      preLoaderRoute: typeof StudentHistoryRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/notifications': {
+      id: '/student/notifications'
+      path: '/notifications'
+      fullPath: '/student/notifications'
+      preLoaderRoute: typeof StudentNotificationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/profile': {
+      id: '/student/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentProfileRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/settings': {
+      id: '/student/settings'
+      path: '/settings'
+      fullPath: '/student/settings'
+      preLoaderRoute: typeof StudentSettingsRouteImport
+      parentRoute: typeof StudentRoute
+    }
   }
 }
 
+interface StudentRouteChildren {
+  StudentAppealsRoute: typeof StudentAppealsRoute
+  StudentAttendanceRoute: typeof StudentAttendanceRoute
+  StudentHistoryRoute: typeof StudentHistoryRoute
+  StudentNotificationsRoute: typeof StudentNotificationsRoute
+  StudentProfileRoute: typeof StudentProfileRoute
+  StudentSettingsRoute: typeof StudentSettingsRoute
+  StudentIndexRoute: typeof StudentIndexRoute
+}
+
+const StudentRouteChildren: StudentRouteChildren = {
+  StudentAppealsRoute: StudentAppealsRoute,
+  StudentAttendanceRoute: StudentAttendanceRoute,
+  StudentHistoryRoute: StudentHistoryRoute,
+  StudentNotificationsRoute: StudentNotificationsRoute,
+  StudentProfileRoute: StudentProfileRoute,
+  StudentSettingsRoute: StudentSettingsRoute,
+  StudentIndexRoute: StudentIndexRoute,
+}
+
+const StudentRouteWithChildren =
+  StudentRoute._addFileChildren(StudentRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DesignSystemRoute: DesignSystemRoute,
+  StudentRoute: StudentRouteWithChildren,
+  AuthDeviceRegistrationRoute: AuthDeviceRegistrationRoute,
+  AuthFaceRegistrationRoute: AuthFaceRegistrationRoute,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthOtpRoute: AuthOtpRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
