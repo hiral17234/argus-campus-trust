@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as AuthDeviceRegistrationRouteImport } from './routes/auth.device-registration'
 import { Route as AuthFaceRegistrationRouteImport } from './routes/auth.face-registration'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
@@ -25,6 +26,17 @@ import { Route as StudentHistoryRouteImport } from './routes/student.history'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentSettingsRouteImport } from './routes/student.settings'
+import { Route as TeacherIndexRouteImport } from './routes/teacher.index'
+import { Route as TeacherAnalyticsRouteImport } from './routes/teacher.analytics'
+import { Route as TeacherAppealsRouteImport } from './routes/teacher.appeals'
+import { Route as TeacherClassesRouteImport } from './routes/teacher.classes'
+import { Route as TeacherHistoryRouteImport } from './routes/teacher.history'
+import { Route as TeacherLiveRouteImport } from './routes/teacher.live'
+import { Route as TeacherNotificationsRouteImport } from './routes/teacher.notifications'
+import { Route as TeacherProfileRouteImport } from './routes/teacher.profile'
+import { Route as TeacherReportsRouteImport } from './routes/teacher.reports'
+import { Route as TeacherSessionRouteImport } from './routes/teacher.session'
+import { Route as TeacherSettingsRouteImport } from './routes/teacher.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,6 +51,11 @@ const DesignSystemRoute = DesignSystemRouteImport.update({
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
   path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeacherRoute = TeacherRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthDeviceRegistrationRoute = AuthDeviceRegistrationRouteImport.update({
@@ -106,11 +123,67 @@ const StudentSettingsRoute = StudentSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => StudentRoute,
 } as any)
+const TeacherIndexRoute = TeacherIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherAnalyticsRoute = TeacherAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherAppealsRoute = TeacherAppealsRouteImport.update({
+  id: '/appeals',
+  path: '/appeals',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherClassesRoute = TeacherClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherHistoryRoute = TeacherHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherLiveRoute = TeacherLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherNotificationsRoute = TeacherNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherProfileRoute = TeacherProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherReportsRoute = TeacherReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherSessionRoute = TeacherSessionRouteImport.update({
+  id: '/session',
+  path: '/session',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherSettingsRoute = TeacherSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => TeacherRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
+  '/teacher': typeof TeacherRouteWithChildren
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -123,7 +196,18 @@ export interface FileRoutesByFullPath {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/teacher/analytics': typeof TeacherAnalyticsRoute
+  '/teacher/appeals': typeof TeacherAppealsRoute
+  '/teacher/classes': typeof TeacherClassesRoute
+  '/teacher/history': typeof TeacherHistoryRoute
+  '/teacher/live': typeof TeacherLiveRoute
+  '/teacher/notifications': typeof TeacherNotificationsRoute
+  '/teacher/profile': typeof TeacherProfileRoute
+  '/teacher/reports': typeof TeacherReportsRoute
+  '/teacher/session': typeof TeacherSessionRoute
+  '/teacher/settings': typeof TeacherSettingsRoute
   '/student/': typeof StudentIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,13 +224,25 @@ export interface FileRoutesByTo {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/teacher/analytics': typeof TeacherAnalyticsRoute
+  '/teacher/appeals': typeof TeacherAppealsRoute
+  '/teacher/classes': typeof TeacherClassesRoute
+  '/teacher/history': typeof TeacherHistoryRoute
+  '/teacher/live': typeof TeacherLiveRoute
+  '/teacher/notifications': typeof TeacherNotificationsRoute
+  '/teacher/profile': typeof TeacherProfileRoute
+  '/teacher/reports': typeof TeacherReportsRoute
+  '/teacher/session': typeof TeacherSessionRoute
+  '/teacher/settings': typeof TeacherSettingsRoute
   '/student': typeof StudentIndexRoute
+  '/teacher': typeof TeacherIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
+  '/teacher': typeof TeacherRouteWithChildren
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -159,7 +255,18 @@ export interface FileRoutesById {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/teacher/analytics': typeof TeacherAnalyticsRoute
+  '/teacher/appeals': typeof TeacherAppealsRoute
+  '/teacher/classes': typeof TeacherClassesRoute
+  '/teacher/history': typeof TeacherHistoryRoute
+  '/teacher/live': typeof TeacherLiveRoute
+  '/teacher/notifications': typeof TeacherNotificationsRoute
+  '/teacher/profile': typeof TeacherProfileRoute
+  '/teacher/reports': typeof TeacherReportsRoute
+  '/teacher/session': typeof TeacherSessionRoute
+  '/teacher/settings': typeof TeacherSettingsRoute
   '/student/': typeof StudentIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,6 +274,7 @@ export interface FileRouteTypes {
     | '/'
     | '/design-system'
     | '/student'
+    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -179,7 +287,18 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/teacher/analytics'
+    | '/teacher/appeals'
+    | '/teacher/classes'
+    | '/teacher/history'
+    | '/teacher/live'
+    | '/teacher/notifications'
+    | '/teacher/profile'
+    | '/teacher/reports'
+    | '/teacher/session'
+    | '/teacher/settings'
     | '/student/'
+    | '/teacher/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,12 +315,24 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/teacher/analytics'
+    | '/teacher/appeals'
+    | '/teacher/classes'
+    | '/teacher/history'
+    | '/teacher/live'
+    | '/teacher/notifications'
+    | '/teacher/profile'
+    | '/teacher/reports'
+    | '/teacher/session'
+    | '/teacher/settings'
     | '/student'
+    | '/teacher'
   id:
     | '__root__'
     | '/'
     | '/design-system'
     | '/student'
+    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -214,13 +345,25 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/teacher/analytics'
+    | '/teacher/appeals'
+    | '/teacher/classes'
+    | '/teacher/history'
+    | '/teacher/live'
+    | '/teacher/notifications'
+    | '/teacher/profile'
+    | '/teacher/reports'
+    | '/teacher/session'
+    | '/teacher/settings'
     | '/student/'
+    | '/teacher/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DesignSystemRoute: typeof DesignSystemRoute
   StudentRoute: typeof StudentRouteWithChildren
+  TeacherRoute: typeof TeacherRouteWithChildren
   AuthDeviceRegistrationRoute: typeof AuthDeviceRegistrationRoute
   AuthFaceRegistrationRoute: typeof AuthFaceRegistrationRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -250,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/student'
       fullPath: '/student'
       preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher': {
+      id: '/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/device-registration': {
@@ -343,6 +493,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSettingsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/teacher/': {
+      id: '/teacher/'
+      path: '/'
+      fullPath: '/teacher/'
+      preLoaderRoute: typeof TeacherIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/analytics': {
+      id: '/teacher/analytics'
+      path: '/analytics'
+      fullPath: '/teacher/analytics'
+      preLoaderRoute: typeof TeacherAnalyticsRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/appeals': {
+      id: '/teacher/appeals'
+      path: '/appeals'
+      fullPath: '/teacher/appeals'
+      preLoaderRoute: typeof TeacherAppealsRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/classes': {
+      id: '/teacher/classes'
+      path: '/classes'
+      fullPath: '/teacher/classes'
+      preLoaderRoute: typeof TeacherClassesRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/history': {
+      id: '/teacher/history'
+      path: '/history'
+      fullPath: '/teacher/history'
+      preLoaderRoute: typeof TeacherHistoryRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/live': {
+      id: '/teacher/live'
+      path: '/live'
+      fullPath: '/teacher/live'
+      preLoaderRoute: typeof TeacherLiveRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/notifications': {
+      id: '/teacher/notifications'
+      path: '/notifications'
+      fullPath: '/teacher/notifications'
+      preLoaderRoute: typeof TeacherNotificationsRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/profile': {
+      id: '/teacher/profile'
+      path: '/profile'
+      fullPath: '/teacher/profile'
+      preLoaderRoute: typeof TeacherProfileRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/reports': {
+      id: '/teacher/reports'
+      path: '/reports'
+      fullPath: '/teacher/reports'
+      preLoaderRoute: typeof TeacherReportsRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/session': {
+      id: '/teacher/session'
+      path: '/session'
+      fullPath: '/teacher/session'
+      preLoaderRoute: typeof TeacherSessionRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/settings': {
+      id: '/teacher/settings'
+      path: '/settings'
+      fullPath: '/teacher/settings'
+      preLoaderRoute: typeof TeacherSettingsRouteImport
+      parentRoute: typeof TeacherRoute
+    }
   }
 }
 
@@ -369,10 +596,42 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface TeacherRouteChildren {
+  TeacherAnalyticsRoute: typeof TeacherAnalyticsRoute
+  TeacherAppealsRoute: typeof TeacherAppealsRoute
+  TeacherClassesRoute: typeof TeacherClassesRoute
+  TeacherHistoryRoute: typeof TeacherHistoryRoute
+  TeacherLiveRoute: typeof TeacherLiveRoute
+  TeacherNotificationsRoute: typeof TeacherNotificationsRoute
+  TeacherProfileRoute: typeof TeacherProfileRoute
+  TeacherReportsRoute: typeof TeacherReportsRoute
+  TeacherSessionRoute: typeof TeacherSessionRoute
+  TeacherSettingsRoute: typeof TeacherSettingsRoute
+  TeacherIndexRoute: typeof TeacherIndexRoute
+}
+
+const TeacherRouteChildren: TeacherRouteChildren = {
+  TeacherAnalyticsRoute: TeacherAnalyticsRoute,
+  TeacherAppealsRoute: TeacherAppealsRoute,
+  TeacherClassesRoute: TeacherClassesRoute,
+  TeacherHistoryRoute: TeacherHistoryRoute,
+  TeacherLiveRoute: TeacherLiveRoute,
+  TeacherNotificationsRoute: TeacherNotificationsRoute,
+  TeacherProfileRoute: TeacherProfileRoute,
+  TeacherReportsRoute: TeacherReportsRoute,
+  TeacherSessionRoute: TeacherSessionRoute,
+  TeacherSettingsRoute: TeacherSettingsRoute,
+  TeacherIndexRoute: TeacherIndexRoute,
+}
+
+const TeacherRouteWithChildren =
+  TeacherRoute._addFileChildren(TeacherRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DesignSystemRoute: DesignSystemRoute,
   StudentRoute: StudentRouteWithChildren,
+  TeacherRoute: TeacherRouteWithChildren,
   AuthDeviceRegistrationRoute: AuthDeviceRegistrationRoute,
   AuthFaceRegistrationRoute: AuthFaceRegistrationRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
