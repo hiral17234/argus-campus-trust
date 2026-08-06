@@ -247,11 +247,13 @@ function LivePage() {
               </DialogHeader>
 
               <CameraPreview
-                state={selected.status === "Verified" ? "success" : "error"}
-                message={
+                label="Captured face"
+                status={selected.status}
+                statusTone={liveStatusTone[selected.status]}
+                hint={
                   selected.status === "Verified"
-                    ? "Captured frame · liveness confirmed"
-                    : "Captured frame · verification rejected"
+                    ? "Liveness confirmed · frame retained for audit"
+                    : "Verification rejected · frame retained for audit"
                 }
               />
 
