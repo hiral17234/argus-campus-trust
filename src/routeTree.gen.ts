@@ -26,6 +26,7 @@ import { Route as StudentHistoryRouteImport } from './routes/student.history'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentSettingsRouteImport } from './routes/student.settings'
+import { Route as TeacherIndexRouteImport } from './routes/teacher.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,12 +113,17 @@ const StudentSettingsRoute = StudentSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => StudentRoute,
 } as any)
+const TeacherIndexRoute = TeacherIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TeacherRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
-  '/teacher': typeof TeacherRoute
+  '/teacher': typeof TeacherRouteWithChildren
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -131,11 +137,11 @@ export interface FileRoutesByFullPath {
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
   '/student/': typeof StudentIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
-  '/teacher': typeof TeacherRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -149,13 +155,14 @@ export interface FileRoutesByTo {
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
   '/student': typeof StudentIndexRoute
+  '/teacher': typeof TeacherIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
-  '/teacher': typeof TeacherRoute
+  '/teacher': typeof TeacherRouteWithChildren
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -169,6 +176,7 @@ export interface FileRoutesById {
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
   '/student/': typeof StudentIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,11 +198,11 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/settings'
     | '/student/'
+    | '/teacher/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/design-system'
-    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -208,6 +216,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/settings'
     | '/student'
+    | '/teacher'
   id:
     | '__root__'
     | '/'
@@ -227,13 +236,14 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/settings'
     | '/student/'
+    | '/teacher/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DesignSystemRoute: typeof DesignSystemRoute
   StudentRoute: typeof StudentRouteWithChildren
-  TeacherRoute: typeof TeacherRoute
+  TeacherRoute: typeof TeacherRouteWithChildren
   AuthDeviceRegistrationRoute: typeof AuthDeviceRegistrationRoute
   AuthFaceRegistrationRoute: typeof AuthFaceRegistrationRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -363,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSettingsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/teacher/': {
+      id: '/teacher/'
+      path: '/'
+      fullPath: '/teacher/'
+      preLoaderRoute: typeof TeacherIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
   }
 }
 
@@ -389,11 +406,22 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface TeacherRouteChildren {
+  TeacherIndexRoute: typeof TeacherIndexRoute
+}
+
+const TeacherRouteChildren: TeacherRouteChildren = {
+  TeacherIndexRoute: TeacherIndexRoute,
+}
+
+const TeacherRouteWithChildren =
+  TeacherRoute._addFileChildren(TeacherRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DesignSystemRoute: DesignSystemRoute,
   StudentRoute: StudentRouteWithChildren,
-  TeacherRoute: TeacherRoute,
+  TeacherRoute: TeacherRouteWithChildren,
   AuthDeviceRegistrationRoute: AuthDeviceRegistrationRoute,
   AuthFaceRegistrationRoute: AuthFaceRegistrationRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
