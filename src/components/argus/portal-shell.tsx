@@ -28,8 +28,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
+export type PortalTo = NonNullable<LinkProps["to"]>;
+
 export type PortalNavItem = {
-  to: LinkProps["to"];
+  to: PortalTo;
   label: string;
   icon: ComponentType<{ className?: string }>;
   badge?: number;
@@ -43,9 +45,9 @@ export type PortalShellProps = {
   navItems: readonly PortalNavItem[];
   bottomItems: readonly PortalNavItem[];
   user: { name: string; subtitle: string; email: string };
-  profileTo: LinkProps["to"];
-  settingsTo: LinkProps["to"];
-  notificationsTo: LinkProps["to"];
+  profileTo: PortalTo;
+  settingsTo: PortalTo;
+  notificationsTo: PortalTo;
   panel?: { label: string; tone: StatusTone; status: string; description: string };
   headerStatus?: string;
   searchPlaceholder?: string;
