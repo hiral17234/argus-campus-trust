@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as AuthDeviceRegistrationRouteImport } from './routes/auth.device-registration'
 import { Route as AuthFaceRegistrationRouteImport } from './routes/auth.face-registration'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
@@ -39,6 +40,11 @@ const DesignSystemRoute = DesignSystemRouteImport.update({
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
   path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeacherRoute = TeacherRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthDeviceRegistrationRoute = AuthDeviceRegistrationRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
+  '/teacher': typeof TeacherRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
+  '/teacher': typeof TeacherRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
+  '/teacher': typeof TeacherRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/design-system'
     | '/student'
+    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/design-system'
+    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/design-system'
     | '/student'
+    | '/teacher'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DesignSystemRoute: typeof DesignSystemRoute
   StudentRoute: typeof StudentRouteWithChildren
+  TeacherRoute: typeof TeacherRoute
   AuthDeviceRegistrationRoute: typeof AuthDeviceRegistrationRoute
   AuthFaceRegistrationRoute: typeof AuthFaceRegistrationRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/student'
       fullPath: '/student'
       preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher': {
+      id: '/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/device-registration': {
@@ -373,6 +393,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DesignSystemRoute: DesignSystemRoute,
   StudentRoute: StudentRouteWithChildren,
+  TeacherRoute: TeacherRoute,
   AuthDeviceRegistrationRoute: AuthDeviceRegistrationRoute,
   AuthFaceRegistrationRoute: AuthFaceRegistrationRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
@@ -383,13 +404,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
