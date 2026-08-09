@@ -82,6 +82,7 @@ function LivePage() {
         title="Live attendance monitoring"
         description="CS3110 · Database Systems · Block A 112 · window closes in 04:12"
         actions={
+          <>
           <Button
             size="sm"
             variant="outline"
@@ -90,6 +91,10 @@ function LivePage() {
             <SquarePen />
             Manual
           </Button>
+          <Button size="sm" variant="outline" onClick={() => setReopenTarget("__all__")}>
+            Reopen all
+          </Button>
+          </>
         }
       />
 
