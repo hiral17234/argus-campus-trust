@@ -5,6 +5,7 @@ import { PageHeader, SectionCard, DetailRow } from "@/components/argus/section";
 import { StatusChip } from "@/components/argus/status-chip";
 import { EmptyState } from "@/components/argus/empty-state";
 import { CameraPreview } from "@/components/argus/camera-preview";
+import { AiExplanationPanel } from "@/components/argus/verification/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,6 +58,7 @@ function LivePage() {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<LiveEntry | null>(null);
+  const [reopenTarget, setReopenTarget] = useState<string | null>(null);
 
   const rows = useMemo(
     () =>
@@ -336,6 +338,36 @@ function LivePage() {
 
             </>
           ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={reopenTarget !== null} onOpenChange={(open) => !open && setReopenTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reopen verification?</DialogTitle>
+            <DialogDescription>
+              {reopenTarget === "__all__"
+                ? "All students in this session will be able to verify again until the window closes."
+                : `${reopenTarget} will be able to attempt verification again until the window closes.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setReopenTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                toast.success("Verification reopened", {
+                  description:
+                    reopenTarget === "__all__" ? "All students · CS3110" : `${reopenTarget} · CS3110`,
+                });
+                setReopenTarget(null);
+              }}
+            >
+              Reopen
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
