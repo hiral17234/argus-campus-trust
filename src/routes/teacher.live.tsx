@@ -5,6 +5,7 @@ import { PageHeader, SectionCard, DetailRow } from "@/components/argus/section";
 import { StatusChip } from "@/components/argus/status-chip";
 import { EmptyState } from "@/components/argus/empty-state";
 import { CameraPreview } from "@/components/argus/camera-preview";
+import { AiExplanationPanel } from "@/components/argus/verification/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,6 +58,7 @@ function LivePage() {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<LiveEntry | null>(null);
+  const [reopenTarget, setReopenTarget] = useState<string | null>(null);
 
   const rows = useMemo(
     () =>
@@ -80,6 +82,7 @@ function LivePage() {
         title="Live attendance monitoring"
         description="CS3110 · Database Systems · Block A 112 · window closes in 04:12"
         actions={
+          <>
           <Button
             size="sm"
             variant="outline"
@@ -88,6 +91,10 @@ function LivePage() {
             <SquarePen />
             Manual
           </Button>
+          <Button size="sm" variant="outline" onClick={() => setReopenTarget("__all__")}>
+            Reopen all
+          </Button>
+          </>
         }
       />
 
@@ -274,7 +281,21 @@ function LivePage() {
                 {selected.reason ? <DetailRow label="Reason" value={selected.reason} /> : null}
               </div>
 
-              <DialogFooter>
+              <AiExplanationPanel
+                outcome={selected.status === "Verified" ? "verified" : "rejected"}
+                reasons={
+                  selected.status === "Verified"
+                    ? []
+                    : [
+                        selected.reason ?? "Identity match below configured threshold",
+                        selected.gesture === "None" ? "Required gesture was not completed" : null,
+                        selected.device !== "Trusted" ? "Device was not recognised" : null,
+                        selected.location !== "Verified" ? "Location outside the permitted range" : null,
+                      ].filter((r): r is string => Boolean(r))
+                }
+              />
+
+              <DialogFooter className="flex-wrap gap-2 sm:justify-start">
                 <Button
                   variant="outline"
                   size="sm"
@@ -283,17 +304,75 @@ function LivePage() {
                   <PlayCircle /> Replay capture
                 </Button>
                 <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toast.info("Remark added", { description: `Remark recorded for ${selected.student}.` })}
+                >
+                  Add remark
+                </Button>
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => {
-                    toast.success("Marked present manually", { description: `${selected.student} · CS3110` });
+                    setReopenTarget(selected.student);
                     setSelected(null);
                   }}
                 >
-                  Override to present
+                  Reopen verification
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    toast.error("Verification rejected", { description: `${selected.student} remains unmarked.` });
+                    setSelected(null);
+                  }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    toast.success("Approved", { description: `${selected.student} marked present.` });
+                    setSelected(null);
+                  }}
+                >
+                  Approve
                 </Button>
               </DialogFooter>
+
             </>
           ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={reopenTarget !== null} onOpenChange={(open) => !open && setReopenTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reopen verification?</DialogTitle>
+            <DialogDescription>
+              {reopenTarget === "__all__"
+                ? "All students in this session will be able to verify again until the window closes."
+                : `${reopenTarget} will be able to attempt verification again until the window closes.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setReopenTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                toast.success("Verification reopened", {
+                  description:
+                    reopenTarget === "__all__" ? "All students · CS3110" : `${reopenTarget} · CS3110`,
+                });
+                setReopenTarget(null);
+              }}
+            >
+              Reopen
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

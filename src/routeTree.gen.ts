@@ -26,6 +26,7 @@ import { Route as StudentHistoryRouteImport } from './routes/student.history'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentSettingsRouteImport } from './routes/student.settings'
+import { Route as StudentVerifyRouteImport } from './routes/student.verify'
 import { Route as TeacherIndexRouteImport } from './routes/teacher.index'
 import { Route as TeacherAnalyticsRouteImport } from './routes/teacher.analytics'
 import { Route as TeacherAppealsRouteImport } from './routes/teacher.appeals'
@@ -123,6 +124,11 @@ const StudentSettingsRoute = StudentSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentVerifyRoute = StudentVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => StudentRoute,
+} as any)
 const TeacherIndexRoute = TeacherIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
   '/teacher/classes': typeof TeacherClassesRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
   '/teacher/classes': typeof TeacherClassesRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
   '/teacher/classes': typeof TeacherClassesRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
     | '/teacher/classes'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
     | '/teacher/classes'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/student/notifications'
     | '/student/profile'
     | '/student/settings'
+    | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
     | '/teacher/classes'
@@ -493,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSettingsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/verify': {
+      id: '/student/verify'
+      path: '/verify'
+      fullPath: '/student/verify'
+      preLoaderRoute: typeof StudentVerifyRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/teacher/': {
       id: '/teacher/'
       path: '/'
@@ -580,6 +599,7 @@ interface StudentRouteChildren {
   StudentNotificationsRoute: typeof StudentNotificationsRoute
   StudentProfileRoute: typeof StudentProfileRoute
   StudentSettingsRoute: typeof StudentSettingsRoute
+  StudentVerifyRoute: typeof StudentVerifyRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -590,6 +610,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentNotificationsRoute: StudentNotificationsRoute,
   StudentProfileRoute: StudentProfileRoute,
   StudentSettingsRoute: StudentSettingsRoute,
+  StudentVerifyRoute: StudentVerifyRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 
