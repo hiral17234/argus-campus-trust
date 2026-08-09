@@ -274,7 +274,21 @@ function LivePage() {
                 {selected.reason ? <DetailRow label="Reason" value={selected.reason} /> : null}
               </div>
 
-              <DialogFooter>
+              <AiExplanationPanel
+                outcome={selected.status === "Verified" ? "verified" : "rejected"}
+                reasons={
+                  selected.status === "Verified"
+                    ? []
+                    : [
+                        selected.reason ?? "Identity match below configured threshold",
+                        selected.gesture === "None" ? "Required gesture was not completed" : null,
+                        selected.device !== "Trusted" ? "Device was not recognised" : null,
+                        selected.location !== "Verified" ? "Location outside the permitted range" : null,
+                      ].filter((r): r is string => Boolean(r))
+                }
+              />
+
+              <DialogFooter className="flex-wrap gap-2 sm:justify-start">
                 <Button
                   variant="outline"
                   size="sm"
@@ -283,15 +297,43 @@ function LivePage() {
                   <PlayCircle /> Replay capture
                 </Button>
                 <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toast.info("Remark added", { description: `Remark recorded for ${selected.student}.` })}
+                >
+                  Add remark
+                </Button>
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => {
-                    toast.success("Marked present manually", { description: `${selected.student} · CS3110` });
+                    setReopenTarget(selected.student);
                     setSelected(null);
                   }}
                 >
-                  Override to present
+                  Reopen verification
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    toast.error("Verification rejected", { description: `${selected.student} remains unmarked.` });
+                    setSelected(null);
+                  }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    toast.success("Approved", { description: `${selected.student} marked present.` });
+                    setSelected(null);
+                  }}
+                >
+                  Approve
                 </Button>
               </DialogFooter>
+
             </>
           ) : null}
         </DialogContent>
