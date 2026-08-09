@@ -161,9 +161,10 @@ function pickChallenges(count: number): LivenessChallenge[] {
   const pool = [...challengePool];
   const picked: LivenessChallenge[] = [];
   for (let i = 0; i < count && pool.length > 0; i++) {
-    const [kind] = pool.splice(Math.floor(Math.random() * pool.length), 1);
+    const kind = pool.splice(Math.floor(Math.random() * pool.length), 1)[0] as ChallengeKind;
     picked.push({
       id: `ch-${i}-${kind}`,
+
       kind,
       instruction: challengeInstructions[kind],
       timeLimit: 10,
