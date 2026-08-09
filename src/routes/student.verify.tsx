@@ -42,13 +42,14 @@ type Search = { method: "qr" | "code"; scenario: VerificationScenario };
 
 export const Route = createFileRoute("/student/verify")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    method: search.method === "code" ? "code" : "qr",
+    method: search["method"] === "code" ? "code" : "qr",
     scenario: (["success", "reject-match", "reject-gesture", "spoof"] as const).includes(
-      search.scenario as VerificationScenario,
+      search["scenario"] as VerificationScenario,
     )
-      ? (search.scenario as VerificationScenario)
+      ? (search["scenario"] as VerificationScenario)
       : "success",
   }),
+
   head: () => ({
     meta: [
       { title: "Identity Verification — ARGUS" },
