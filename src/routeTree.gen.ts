@@ -15,6 +15,17 @@ import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminDepartmentsRouteImport } from './routes/admin.departments'
+import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminProfileRouteImport } from './routes/admin.profile'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSecurityRouteImport } from './routes/admin.security'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminStudentsRouteImport } from './routes/admin.students'
+import { Route as AdminSubjectsRouteImport } from './routes/admin.subjects'
+import { Route as AdminTeachersRouteImport } from './routes/admin.teachers'
 import { Route as AuthDeviceRegistrationRouteImport } from './routes/auth.device-registration'
 import { Route as AuthFaceRegistrationRouteImport } from './routes/auth.face-registration'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
@@ -22,12 +33,26 @@ import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
+import { Route as StudentAcademicAlertsRouteImport } from './routes/student.academic-alerts'
+import { Route as StudentAppealHistoryRouteImport } from './routes/student.appeal-history'
 import { Route as StudentAppealsRouteImport } from './routes/student.appeals'
 import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
+import { Route as StudentCalendarRouteImport } from './routes/student.calendar'
+import { Route as StudentChallengeRouteImport } from './routes/student.challenge'
+import { Route as StudentDevicesRouteImport } from './routes/student.devices'
+import { Route as StudentFaceProfileRouteImport } from './routes/student.face-profile'
+import { Route as StudentHelpRouteImport } from './routes/student.help'
 import { Route as StudentHistoryRouteImport } from './routes/student.history'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
+import { Route as StudentPrivacyRouteImport } from './routes/student.privacy'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
+import { Route as StudentSessionDetailsRouteImport } from './routes/student.session-details'
 import { Route as StudentSettingsRouteImport } from './routes/student.settings'
+import { Route as StudentSubjectDetailsRouteImport } from './routes/student.subject-details'
+import { Route as StudentSubjectsRouteImport } from './routes/student.subjects'
+import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
+import { Route as StudentVerificationDetailsRouteImport } from './routes/student.verification-details'
+import { Route as StudentVerificationResultRouteImport } from './routes/student.verification-result'
 import { Route as StudentVerifyRouteImport } from './routes/student.verify'
 import { Route as TeacherIndexRouteImport } from './routes/teacher.index'
 import { Route as TeacherAnalyticsRouteImport } from './routes/teacher.analytics'
@@ -71,6 +96,61 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDepartmentsRoute = AdminDepartmentsRouteImport.update({
+  id: '/departments',
+  path: '/departments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSecurityRoute = AdminSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSubjectsRoute = AdminSubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTeachersRoute = AdminTeachersRouteImport.update({
+  id: '/teachers',
+  path: '/teachers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthDeviceRegistrationRoute = AuthDeviceRegistrationRouteImport.update({
   id: '/auth/device-registration',
   path: '/auth/device-registration',
@@ -106,6 +186,16 @@ const StudentIndexRoute = StudentIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentAcademicAlertsRoute = StudentAcademicAlertsRouteImport.update({
+  id: '/academic-alerts',
+  path: '/academic-alerts',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentAppealHistoryRoute = StudentAppealHistoryRouteImport.update({
+  id: '/appeal-history',
+  path: '/appeal-history',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentAppealsRoute = StudentAppealsRouteImport.update({
   id: '/appeals',
   path: '/appeals',
@@ -114,6 +204,31 @@ const StudentAppealsRoute = StudentAppealsRouteImport.update({
 const StudentAttendanceRoute = StudentAttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentCalendarRoute = StudentCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentChallengeRoute = StudentChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentDevicesRoute = StudentDevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentFaceProfileRoute = StudentFaceProfileRouteImport.update({
+  id: '/face-profile',
+  path: '/face-profile',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentHelpRoute = StudentHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => StudentRoute,
 } as any)
 const StudentHistoryRoute = StudentHistoryRouteImport.update({
@@ -126,9 +241,19 @@ const StudentNotificationsRoute = StudentNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentPrivacyRoute = StudentPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentProfileRoute = StudentProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentSessionDetailsRoute = StudentSessionDetailsRouteImport.update({
+  id: '/session-details',
+  path: '/session-details',
   getParentRoute: () => StudentRoute,
 } as any)
 const StudentSettingsRoute = StudentSettingsRouteImport.update({
@@ -136,6 +261,33 @@ const StudentSettingsRoute = StudentSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentSubjectDetailsRoute = StudentSubjectDetailsRouteImport.update({
+  id: '/subject-details',
+  path: '/subject-details',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentSubjectsRoute = StudentSubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentTimetableRoute = StudentTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentVerificationDetailsRoute =
+  StudentVerificationDetailsRouteImport.update({
+    id: '/verification-details',
+    path: '/verification-details',
+    getParentRoute: () => StudentRoute,
+  } as any)
+const StudentVerificationResultRoute =
+  StudentVerificationResultRouteImport.update({
+    id: '/verification-result',
+    path: '/verification-result',
+    getParentRoute: () => StudentRoute,
+  } as any)
 const StudentVerifyRoute = StudentVerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
@@ -203,18 +355,43 @@ export interface FileRoutesByFullPath {
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
   '/teacher': typeof TeacherRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/security': typeof AdminSecurityRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/subjects': typeof AdminSubjectsRoute
+  '/admin/teachers': typeof AdminTeachersRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/academic-alerts': typeof StudentAcademicAlertsRoute
+  '/student/appeal-history': typeof StudentAppealHistoryRoute
   '/student/appeals': typeof StudentAppealsRoute
   '/student/attendance': typeof StudentAttendanceRoute
+  '/student/calendar': typeof StudentCalendarRoute
+  '/student/challenge': typeof StudentChallengeRoute
+  '/student/devices': typeof StudentDevicesRoute
+  '/student/face-profile': typeof StudentFaceProfileRoute
+  '/student/help': typeof StudentHelpRoute
   '/student/history': typeof StudentHistoryRoute
   '/student/notifications': typeof StudentNotificationsRoute
+  '/student/privacy': typeof StudentPrivacyRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/session-details': typeof StudentSessionDetailsRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/subject-details': typeof StudentSubjectDetailsRoute
+  '/student/subjects': typeof StudentSubjectsRoute
+  '/student/timetable': typeof StudentTimetableRoute
+  '/student/verification-details': typeof StudentVerificationDetailsRoute
+  '/student/verification-result': typeof StudentVerificationResultRoute
   '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
@@ -233,18 +410,43 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/design-system': typeof DesignSystemRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/security': typeof AdminSecurityRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/subjects': typeof AdminSubjectsRoute
+  '/admin/teachers': typeof AdminTeachersRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/academic-alerts': typeof StudentAcademicAlertsRoute
+  '/student/appeal-history': typeof StudentAppealHistoryRoute
   '/student/appeals': typeof StudentAppealsRoute
   '/student/attendance': typeof StudentAttendanceRoute
+  '/student/calendar': typeof StudentCalendarRoute
+  '/student/challenge': typeof StudentChallengeRoute
+  '/student/devices': typeof StudentDevicesRoute
+  '/student/face-profile': typeof StudentFaceProfileRoute
+  '/student/help': typeof StudentHelpRoute
   '/student/history': typeof StudentHistoryRoute
   '/student/notifications': typeof StudentNotificationsRoute
+  '/student/privacy': typeof StudentPrivacyRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/session-details': typeof StudentSessionDetailsRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/subject-details': typeof StudentSubjectDetailsRoute
+  '/student/subjects': typeof StudentSubjectsRoute
+  '/student/timetable': typeof StudentTimetableRoute
+  '/student/verification-details': typeof StudentVerificationDetailsRoute
+  '/student/verification-result': typeof StudentVerificationResultRoute
   '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
@@ -267,18 +469,43 @@ export interface FileRoutesById {
   '/design-system': typeof DesignSystemRoute
   '/student': typeof StudentRouteWithChildren
   '/teacher': typeof TeacherRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/security': typeof AdminSecurityRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/subjects': typeof AdminSubjectsRoute
+  '/admin/teachers': typeof AdminTeachersRoute
   '/auth/device-registration': typeof AuthDeviceRegistrationRoute
   '/auth/face-registration': typeof AuthFaceRegistrationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/academic-alerts': typeof StudentAcademicAlertsRoute
+  '/student/appeal-history': typeof StudentAppealHistoryRoute
   '/student/appeals': typeof StudentAppealsRoute
   '/student/attendance': typeof StudentAttendanceRoute
+  '/student/calendar': typeof StudentCalendarRoute
+  '/student/challenge': typeof StudentChallengeRoute
+  '/student/devices': typeof StudentDevicesRoute
+  '/student/face-profile': typeof StudentFaceProfileRoute
+  '/student/help': typeof StudentHelpRoute
   '/student/history': typeof StudentHistoryRoute
   '/student/notifications': typeof StudentNotificationsRoute
+  '/student/privacy': typeof StudentPrivacyRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/session-details': typeof StudentSessionDetailsRoute
   '/student/settings': typeof StudentSettingsRoute
+  '/student/subject-details': typeof StudentSubjectDetailsRoute
+  '/student/subjects': typeof StudentSubjectsRoute
+  '/student/timetable': typeof StudentTimetableRoute
+  '/student/verification-details': typeof StudentVerificationDetailsRoute
+  '/student/verification-result': typeof StudentVerificationResultRoute
   '/student/verify': typeof StudentVerifyRoute
   '/teacher/analytics': typeof TeacherAnalyticsRoute
   '/teacher/appeals': typeof TeacherAppealsRoute
@@ -302,18 +529,43 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/student'
     | '/teacher'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/departments'
+    | '/admin/notifications'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/security'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/subjects'
+    | '/admin/teachers'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
     | '/auth/register'
+    | '/student/academic-alerts'
+    | '/student/appeal-history'
     | '/student/appeals'
     | '/student/attendance'
+    | '/student/calendar'
+    | '/student/challenge'
+    | '/student/devices'
+    | '/student/face-profile'
+    | '/student/help'
     | '/student/history'
     | '/student/notifications'
+    | '/student/privacy'
     | '/student/profile'
+    | '/student/session-details'
     | '/student/settings'
+    | '/student/subject-details'
+    | '/student/subjects'
+    | '/student/timetable'
+    | '/student/verification-details'
+    | '/student/verification-result'
     | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
@@ -332,18 +584,43 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/design-system'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/departments'
+    | '/admin/notifications'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/security'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/subjects'
+    | '/admin/teachers'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
     | '/auth/register'
+    | '/student/academic-alerts'
+    | '/student/appeal-history'
     | '/student/appeals'
     | '/student/attendance'
+    | '/student/calendar'
+    | '/student/challenge'
+    | '/student/devices'
+    | '/student/face-profile'
+    | '/student/help'
     | '/student/history'
     | '/student/notifications'
+    | '/student/privacy'
     | '/student/profile'
+    | '/student/session-details'
     | '/student/settings'
+    | '/student/subject-details'
+    | '/student/subjects'
+    | '/student/timetable'
+    | '/student/verification-details'
+    | '/student/verification-result'
     | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
@@ -365,18 +642,43 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/student'
     | '/teacher'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/departments'
+    | '/admin/notifications'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/security'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/subjects'
+    | '/admin/teachers'
     | '/auth/device-registration'
     | '/auth/face-registration'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
     | '/auth/register'
+    | '/student/academic-alerts'
+    | '/student/appeal-history'
     | '/student/appeals'
     | '/student/attendance'
+    | '/student/calendar'
+    | '/student/challenge'
+    | '/student/devices'
+    | '/student/face-profile'
+    | '/student/help'
     | '/student/history'
     | '/student/notifications'
+    | '/student/privacy'
     | '/student/profile'
+    | '/student/session-details'
     | '/student/settings'
+    | '/student/subject-details'
+    | '/student/subjects'
+    | '/student/timetable'
+    | '/student/verification-details'
+    | '/student/verification-result'
     | '/student/verify'
     | '/teacher/analytics'
     | '/teacher/appeals'
@@ -451,6 +753,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/departments': {
+      id: '/admin/departments'
+      path: '/departments'
+      fullPath: '/admin/departments'
+      preLoaderRoute: typeof AdminDepartmentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/security': {
+      id: '/admin/security'
+      path: '/security'
+      fullPath: '/admin/security'
+      preLoaderRoute: typeof AdminSecurityRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/subjects': {
+      id: '/admin/subjects'
+      path: '/subjects'
+      fullPath: '/admin/subjects'
+      preLoaderRoute: typeof AdminSubjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/teachers': {
+      id: '/admin/teachers'
+      path: '/teachers'
+      fullPath: '/admin/teachers'
+      preLoaderRoute: typeof AdminTeachersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/auth/device-registration': {
       id: '/auth/device-registration'
       path: '/auth/device-registration'
@@ -500,6 +879,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentIndexRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/academic-alerts': {
+      id: '/student/academic-alerts'
+      path: '/academic-alerts'
+      fullPath: '/student/academic-alerts'
+      preLoaderRoute: typeof StudentAcademicAlertsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/appeal-history': {
+      id: '/student/appeal-history'
+      path: '/appeal-history'
+      fullPath: '/student/appeal-history'
+      preLoaderRoute: typeof StudentAppealHistoryRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/appeals': {
       id: '/student/appeals'
       path: '/appeals'
@@ -512,6 +905,41 @@ declare module '@tanstack/react-router' {
       path: '/attendance'
       fullPath: '/student/attendance'
       preLoaderRoute: typeof StudentAttendanceRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/calendar': {
+      id: '/student/calendar'
+      path: '/calendar'
+      fullPath: '/student/calendar'
+      preLoaderRoute: typeof StudentCalendarRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/challenge': {
+      id: '/student/challenge'
+      path: '/challenge'
+      fullPath: '/student/challenge'
+      preLoaderRoute: typeof StudentChallengeRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/devices': {
+      id: '/student/devices'
+      path: '/devices'
+      fullPath: '/student/devices'
+      preLoaderRoute: typeof StudentDevicesRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/face-profile': {
+      id: '/student/face-profile'
+      path: '/face-profile'
+      fullPath: '/student/face-profile'
+      preLoaderRoute: typeof StudentFaceProfileRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/help': {
+      id: '/student/help'
+      path: '/help'
+      fullPath: '/student/help'
+      preLoaderRoute: typeof StudentHelpRouteImport
       parentRoute: typeof StudentRoute
     }
     '/student/history': {
@@ -528,6 +956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentNotificationsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/privacy': {
+      id: '/student/privacy'
+      path: '/privacy'
+      fullPath: '/student/privacy'
+      preLoaderRoute: typeof StudentPrivacyRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/profile': {
       id: '/student/profile'
       path: '/profile'
@@ -535,11 +970,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentProfileRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/session-details': {
+      id: '/student/session-details'
+      path: '/session-details'
+      fullPath: '/student/session-details'
+      preLoaderRoute: typeof StudentSessionDetailsRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/settings': {
       id: '/student/settings'
       path: '/settings'
       fullPath: '/student/settings'
       preLoaderRoute: typeof StudentSettingsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/subject-details': {
+      id: '/student/subject-details'
+      path: '/subject-details'
+      fullPath: '/student/subject-details'
+      preLoaderRoute: typeof StudentSubjectDetailsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/subjects': {
+      id: '/student/subjects'
+      path: '/subjects'
+      fullPath: '/student/subjects'
+      preLoaderRoute: typeof StudentSubjectsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/timetable': {
+      id: '/student/timetable'
+      path: '/timetable'
+      fullPath: '/student/timetable'
+      preLoaderRoute: typeof StudentTimetableRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/verification-details': {
+      id: '/student/verification-details'
+      path: '/verification-details'
+      fullPath: '/student/verification-details'
+      preLoaderRoute: typeof StudentVerificationDetailsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/verification-result': {
+      id: '/student/verification-result'
+      path: '/verification-result'
+      fullPath: '/student/verification-result'
+      preLoaderRoute: typeof StudentVerificationResultRouteImport
       parentRoute: typeof StudentRoute
     }
     '/student/verify': {
@@ -630,33 +1107,83 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminDepartmentsRoute: typeof AdminDepartmentsRoute
+  AdminNotificationsRoute: typeof AdminNotificationsRoute
+  AdminProfileRoute: typeof AdminProfileRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminSecurityRoute: typeof AdminSecurityRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminSubjectsRoute: typeof AdminSubjectsRoute
+  AdminTeachersRoute: typeof AdminTeachersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuditRoute: AdminAuditRoute,
+  AdminDepartmentsRoute: AdminDepartmentsRoute,
+  AdminNotificationsRoute: AdminNotificationsRoute,
+  AdminProfileRoute: AdminProfileRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminSecurityRoute: AdminSecurityRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminStudentsRoute: AdminStudentsRoute,
+  AdminSubjectsRoute: AdminSubjectsRoute,
+  AdminTeachersRoute: AdminTeachersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface StudentRouteChildren {
+  StudentAcademicAlertsRoute: typeof StudentAcademicAlertsRoute
+  StudentAppealHistoryRoute: typeof StudentAppealHistoryRoute
   StudentAppealsRoute: typeof StudentAppealsRoute
   StudentAttendanceRoute: typeof StudentAttendanceRoute
+  StudentCalendarRoute: typeof StudentCalendarRoute
+  StudentChallengeRoute: typeof StudentChallengeRoute
+  StudentDevicesRoute: typeof StudentDevicesRoute
+  StudentFaceProfileRoute: typeof StudentFaceProfileRoute
+  StudentHelpRoute: typeof StudentHelpRoute
   StudentHistoryRoute: typeof StudentHistoryRoute
   StudentNotificationsRoute: typeof StudentNotificationsRoute
+  StudentPrivacyRoute: typeof StudentPrivacyRoute
   StudentProfileRoute: typeof StudentProfileRoute
+  StudentSessionDetailsRoute: typeof StudentSessionDetailsRoute
   StudentSettingsRoute: typeof StudentSettingsRoute
+  StudentSubjectDetailsRoute: typeof StudentSubjectDetailsRoute
+  StudentSubjectsRoute: typeof StudentSubjectsRoute
+  StudentTimetableRoute: typeof StudentTimetableRoute
+  StudentVerificationDetailsRoute: typeof StudentVerificationDetailsRoute
+  StudentVerificationResultRoute: typeof StudentVerificationResultRoute
   StudentVerifyRoute: typeof StudentVerifyRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
 const StudentRouteChildren: StudentRouteChildren = {
+  StudentAcademicAlertsRoute: StudentAcademicAlertsRoute,
+  StudentAppealHistoryRoute: StudentAppealHistoryRoute,
   StudentAppealsRoute: StudentAppealsRoute,
   StudentAttendanceRoute: StudentAttendanceRoute,
+  StudentCalendarRoute: StudentCalendarRoute,
+  StudentChallengeRoute: StudentChallengeRoute,
+  StudentDevicesRoute: StudentDevicesRoute,
+  StudentFaceProfileRoute: StudentFaceProfileRoute,
+  StudentHelpRoute: StudentHelpRoute,
   StudentHistoryRoute: StudentHistoryRoute,
   StudentNotificationsRoute: StudentNotificationsRoute,
+  StudentPrivacyRoute: StudentPrivacyRoute,
   StudentProfileRoute: StudentProfileRoute,
+  StudentSessionDetailsRoute: StudentSessionDetailsRoute,
   StudentSettingsRoute: StudentSettingsRoute,
+  StudentSubjectDetailsRoute: StudentSubjectDetailsRoute,
+  StudentSubjectsRoute: StudentSubjectsRoute,
+  StudentTimetableRoute: StudentTimetableRoute,
+  StudentVerificationDetailsRoute: StudentVerificationDetailsRoute,
+  StudentVerificationResultRoute: StudentVerificationResultRoute,
   StudentVerifyRoute: StudentVerifyRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
