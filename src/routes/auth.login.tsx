@@ -1,6 +1,19 @@
+
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AlertCircle, Eye, EyeOff, GraduationCap, ShieldCheck, User } from "lucide-react";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+} from "@tanstack/react-router";
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  ShieldCheck,
+  User,
+} from "lucide-react";
+
 import { AuthLayout } from "@/components/argus/auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +26,16 @@ export const Route = createFileRoute("/auth/login")({
   head: () => ({
     meta: [
       { title: "Sign in — ARGUS Identity Platform" },
-      { name: "description", content: "Sign in to ARGUS with your official college email address." },
+      {
+        name: "description",
+        content:
+          "Sign in to ARGUS with your official college email address.",
+      },
       { property: "og:title", content: "Sign in — ARGUS Identity Platform" },
-      { property: "og:description", content: "Secure role-based access to the ARGUS platform." },
+      {
+        property: "og:description",
+        content: "Secure role-based access to the ARGUS platform.",
+      },
     ],
   }),
   component: LoginPage,
@@ -27,21 +47,61 @@ const roles = [
   { id: "admin", label: "Administrator", icon: ShieldCheck },
 ] as const;
 
+type Role = (typeof roles)[number]["id"];
+
 function LoginPage() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<string>("student");
+
+  const [role, setRole] = useState<Role>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.endsWith(".edu") && !email.includes("@college.edu")) {
-      setError("Use your official college email address (example: name@college.edu).");
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setError("Enter your institutional email address.");
       return;
     }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Enter your password.");
+      return;
+    }
+
     setError(null);
-    navigate({ to: "/auth/otp" });
+    setLoading(true);
+
+    // Frontend prototype only.
+    // The backend must validate credentials, verify the requested role,
+    // create an authentication challenge and send the OTP.
+
+    console.log("Login request:", {
+      email: normalizedEmail,
+      role,
+      remember,
+      passwordProvided: Boolean(password),
+    });
+
+    navigate({
+      to: "/auth/otp",
+      search: {
+        email: normalizedEmail,
+        role,
+        remember,
+      },
+    });
   };
 
   return (
@@ -52,7 +112,10 @@ function LoginPage() {
       footer={
         <>
           Don't have an account?{" "}
-          <Link to="/auth/register" className="font-medium text-foreground underline underline-offset-4">
+          <Link
+            to="/auth/register"
+            className="font-medium text-foreground underline underline-offset-4"
+          >
             Register with college email
           </Link>
         </>
@@ -61,43 +124,49 @@ function LoginPage() {
       <form onSubmit={submit} className="space-y-5">
         <div className="space-y-2">
           <Label>Role</Label>
-          <div className="grid grid-cols-3 gap-1.5 rounded-md border border-border bg-surface-muted p-1">
-            {roles.map((r) => (
+
+          <div className="grid grid-cols-3 gap-1 border border-border bg-surface-muted p-1">
+            {roles.map((item) => (
               <button
-                key={r.id}
+                key={item.id}
                 type="button"
-                onClick={() => setRole(r.id)}
+                onClick={() => setRole(item.id)}
+                aria-pressed={role === item.id}
                 className={cn(
-                  "flex h-9 items-center justify-center gap-1.5 rounded-sm px-1 text-[12px] font-medium transition-colors",
-                  role === r.id
-                    ? "bg-surface text-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground",
+                  "flex h-9 items-center justify-center gap-1.5 px-1 text-[12px] font-medium transition-colors",
+                  role === item.id
+                    ? "bg-surface text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <r.icon className="size-3.5 shrink-0" />
-                <span className="truncate">{r.label}</span>
+                <item.icon className="size-3.5 shrink-0" />
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {error ? (
+        {error && (
           <Alert variant="destructive">
             <AlertCircle className="size-4" />
             <AlertTitle>Sign in failed</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-        ) : null}
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="email">College email</Label>
+
           <Input
             id="email"
             type="email"
             autoComplete="email"
             placeholder="name@college.edu"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              setError(null);
+            }}
             required
           />
         </div>
@@ -105,6 +174,7 @@ function LoginPage() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
+
             <Link
               to="/auth/forgot-password"
               className="text-[12px] text-muted-foreground underline underline-offset-4 hover:text-foreground"
@@ -112,6 +182,7 @@ function LoginPage() {
               Forgot password?
             </Link>
           </div>
+
           <div className="relative">
             <Input
               id="password"
@@ -119,32 +190,56 @@ function LoginPage() {
               autoComplete="current-password"
               placeholder="Enter your password"
               className="pr-10"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value);
+                setError(null);
+              }}
               required
             />
+
             <button
               type="button"
-              onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowPassword((previous) => !previous)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
             </button>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <Checkbox id="remember" defaultChecked />
-          <Label htmlFor="remember" className="text-[13px] font-normal text-muted-foreground">
+          <Checkbox
+            id="remember"
+            checked={remember}
+            onCheckedChange={(value) => setRemember(value === true)}
+          />
+
+          <Label
+            htmlFor="remember"
+            className="text-[13px] font-normal text-muted-foreground"
+          >
             Keep me signed in on this trusted device
           </Label>
         </div>
 
-        <Button type="submit" size="xl">
-          Continue
+        <Button
+          type="submit"
+          size="xl"
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Continue"}
         </Button>
 
         <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
-          Continuing sends a one-time verification code to your college email.
+          Continuing sends a one-time verification code to your college
+          email after your credentials are validated.
         </p>
       </form>
     </AuthLayout>
