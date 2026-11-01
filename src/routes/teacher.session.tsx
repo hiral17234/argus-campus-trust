@@ -1,319 +1,611 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
-  Copy,
-  Download,
-  Expand,
-  Maximize2,
-  PauseCircle,
-  PlayCircle,
-  RefreshCw,
-  RotateCcw,
-  ShieldAlert,
-  StopCircle,
-  Timer,
+  Activity,
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  MapPin,
+  Monitor,
+  Plus,
+  Search,
+  Users,
 } from "lucide-react";
-import { PageHeader, SectionCard } from "@/components/argus/section";
-import { MetricCard } from "@/components/argus/metric-card";
-import { StatusChip, type StatusTone } from "@/components/argus/status-chip";
+
+import {
+  PageHeader,
+  SectionCard,
+} from "@/components/argus/section";
+import { StatusChip } from "@/components/argus/status-chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { attendanceModes, teacherClasses } from "@/lib/teacher-data";
 
 export const Route = createFileRoute("/teacher/session")({
-  head: () => ({
-    meta: [
-      { title: "Attendance Session — ARGUS Faculty" },
-      {
-        name: "description",
-        content:
-          "Configure the subject, room, window and verification mode, then open, pause, extend or close the attendance session.",
-      },
-      { property: "og:title", content: "Attendance Session — ARGUS Faculty" },
-      {
-        property: "og:description",
-        content: "Dynamic QR, secure attendance codes and live verification controls.",
-      },
-    ],
-  }),
-  component: SessionPage,
+  component: TeacherSessions,
 });
 
-type SessionState = "Idle" | "Live" | "Paused" | "Closed";
+type SessionStatus = "Live" | "Upcoming" | "Completed" | "Cancelled";
 
-const stateTone: Record<SessionState, StatusTone> = {
-  Idle: "neutral",
-  Live: "success",
-  Paused: "warning",
-  Closed: "danger",
+type TeachingSession = {
+  id: string;
+  subject: string;
+  code: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  room: string;
+  enrolled: number;
+  present: number;
+  absent: number;
+  status: SessionStatus;
+  methods: string[];
 };
 
-function QrPlaceholder({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "argus-scan-frame grid aspect-square w-full place-items-center rounded-md border border-border bg-surface-muted",
-        className,
-      )}
-    >
-      <div className="grid grid-cols-8 gap-1 p-4">
-        {Array.from({ length: 64 }).map((_, i) => (
-          <span
-            key={i}
-            className={cn(
-              "size-2.5 rounded-[2px] sm:size-3",
-              (i * 7 + (i % 5)) % 3 === 0 ? "bg-foreground" : "bg-transparent",
-            )}
-          />
-        ))}
-      </div>
-    </div>
-  );
+const initialSessions: TeachingSession[] = [
+  {
+    id: "SES-2026-1105-001",
+    subject: "Data Structures and Algorithms",
+    code: "CS301",
+    date: "2026-11-05",
+    startTime: "09:00 AM",
+    endTime: "10:00 AM",
+    room: "Lecture Hall 204",
+    enrolled: 48,
+    present: 32,
+    absent: 0,
+    status: "Live",
+    methods: ["Face", "QR", "Code"],
+  },
+  {
+    id: "SES-2026-1105-002",
+    subject: "Database Management Systems",
+    code: "CS302",
+    date: "2026-11-05",
+    startTime: "11:00 AM",
+    endTime: "12:00 PM",
+    room: "Lab 03",
+    enrolled: 42,
+    present: 0,
+    absent: 0,
+    status: "Upcoming",
+    methods: ["Face", "QR", "Code"],
+  },
+  {
+    id: "SES-2026-1105-003",
+    subject: "Operating Systems",
+    code: "CS303",
+    date: "2026-11-05",
+    startTime: "02:00 PM",
+    endTime: "03:00 PM",
+    room: "Lecture Hall 105",
+    enrolled: 45,
+    present: 0,
+    absent: 0,
+    status: "Upcoming",
+    methods: ["Face", "QR"],
+  },
+  {
+    id: "SES-2026-1104-001",
+    subject: "Data Structures and Algorithms",
+    code: "CS301",
+    date: "2026-11-04",
+    startTime: "09:00 AM",
+    endTime: "10:00 AM",
+    room: "Lecture Hall 204",
+    enrolled: 48,
+    present: 44,
+    absent: 4,
+    status: "Completed",
+    methods: ["Face", "QR", "Code"],
+  },
+  {
+    id: "SES-2026-1104-002",
+    subject: "Database Management Systems",
+    code: "CS302",
+    date: "2026-11-04",
+    startTime: "11:00 AM",
+    endTime: "12:00 PM",
+    room: "Lab 03",
+    enrolled: 42,
+    present: 38,
+    absent: 4,
+    status: "Completed",
+    methods: ["Face", "QR"],
+  },
+  {
+    id: "SES-2026-1103-001",
+    subject: "Computer Networks",
+    code: "CS304",
+    date: "2026-11-03",
+    startTime: "10:00 AM",
+    endTime: "11:00 AM",
+    room: "Lecture Hall 301",
+    enrolled: 40,
+    present: 36,
+    absent: 4,
+    status: "Completed",
+    methods: ["Face", "Code"],
+  },
+  {
+    id: "SES-2026-1103-002",
+    subject: "Operating Systems",
+    code: "CS303",
+    date: "2026-11-03",
+    startTime: "02:00 PM",
+    endTime: "03:00 PM",
+    room: "Lecture Hall 105",
+    enrolled: 45,
+    present: 0,
+    absent: 0,
+    status: "Cancelled",
+    methods: ["Face", "QR"],
+  },
+];
+
+const statusFilters = [
+  "All",
+  "Live",
+  "Upcoming",
+  "Completed",
+  "Cancelled",
+] as const;
+
+type StatusFilter = (typeof statusFilters)[number];
+
+function formatDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+
+  return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
-function SessionPage() {
-  const [state, setState] = useState<SessionState>("Live");
-  const [mode, setMode] = useState<string>("qr");
-  const [code, setCode] = useState("7K4M2Q");
-  const [qrFull, setQrFull] = useState(false);
-  const [codeFull, setCodeFull] = useState(false);
+function TeacherSessions() {
+  const [sessions, setSessions] = useState(initialSessions);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>("All");
+  const [selectedSession, setSelectedSession] =
+    useState<string | null>(null);
 
-  const live = teacherClasses.find((c) => c.status === "Live") ?? teacherClasses[0]!;
+  const liveCount = sessions.filter(
+    (session) => session.status === "Live",
+  ).length;
 
-  const setSession = (next: SessionState, message: string) => {
-    setState(next);
-    toast.info(message, { description: `${live.code} · ${live.room}` });
+  const upcomingCount = sessions.filter(
+    (session) => session.status === "Upcoming",
+  ).length;
+
+  const completedCount = sessions.filter(
+    (session) => session.status === "Completed",
+  ).length;
+
+  const totalStudents = sessions
+    .filter((session) => session.status !== "Cancelled")
+    .reduce((sum, session) => sum + session.enrolled, 0);
+
+  const filteredSessions = useMemo(() => {
+    const query = search.toLowerCase().trim();
+
+    return sessions.filter((session) => {
+      const matchesSearch =
+        session.subject.toLowerCase().includes(query) ||
+        session.code.toLowerCase().includes(query) ||
+        session.id.toLowerCase().includes(query);
+
+      const matchesStatus =
+        statusFilter === "All" || session.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [sessions, search, statusFilter]);
+
+  const selected = sessions.find(
+    (session) => session.id === selectedSession,
+  );
+
+  const handleEndSession = (sessionId: string) => {
+    setSessions((current) =>
+      current.map((session) =>
+        session.id === sessionId
+          ? { ...session, status: "Completed" }
+          : session,
+      ),
+    );
+
+    setSelectedSession(null);
   };
 
   return (
-    <>
+    <div className="space-y-6">
       <PageHeader
-        title="Attendance session"
-        description="Configure verification requirements before opening the window to students."
-        actions={<StatusChip tone={stateTone[state]}>{state}</StatusChip>}
+        title="Session Management"
+        description="Manage attendance sessions, monitor active classes, and review completed sessions."
       />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <SectionCard title="Session configuration" description="Applies to the current class only">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="subject">Subject</Label>
-              <Select defaultValue={live.code}>
-                <SelectTrigger id="subject">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {teacherClasses.map((c) => (
-                    <SelectItem key={c.id} value={c.code}>
-                      {c.code} · {c.subject}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="room">Room</Label>
-              <Select defaultValue={live.room}>
-                <SelectTrigger id="room">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["Block A · 112", "Block C · 204", "Block C · 301", "Lab 3"].map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="topic">Topic of today's lecture</Label>
-              <Input id="topic" defaultValue={live.topic} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="window">Attendance window</Label>
-              <Select defaultValue="10">
-                <SelectTrigger id="window">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["5", "10", "15", "20"].map((m) => (
-                    <SelectItem key={m} value={m}>
-                      {m} minutes
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="strength">Class strength</Label>
-              <Input id="strength" defaultValue={String(live.strength)} readOnly />
-            </div>
+      {/* Demo notice */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-muted/20 p-4">
+        <div className="flex items-start gap-3">
+          <Monitor className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <div>
+            <p className="text-sm font-medium">
+              Demonstration session records
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Session data and status changes are local. No institutional
+              attendance session is created or modified.
+            </p>
+          </div>
+        </div>
+
+        <StatusChip status="Demo data" />
+      </div>
+
+      {/* Summary */}
+      <section>
+        <div className="mb-3">
+          <h2 className="text-sm font-semibold">Session overview</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Summary of the demonstration session list.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            {
+              label: "Live sessions",
+              value: liveCount,
+              icon: Activity,
+            },
+            {
+              label: "Upcoming sessions",
+              value: upcomingCount,
+              icon: CalendarDays,
+            },
+            {
+              label: "Completed sessions",
+              value: completedCount,
+              icon: CheckCircle2,
+            },
+            {
+              label: "Enrolled seats",
+              value: totalStudents,
+              icon: Users,
+            },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div
+                key={item.label}
+                className="border border-border bg-card p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    {item.label}
+                  </p>
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <p className="mt-3 text-2xl font-semibold tabular-nums">
+                  {item.value}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Active sessions */}
+      <SectionCard
+        title="Active attendance sessions"
+        description="Sessions currently accepting attendance in the demonstration environment."
+      >
+        {sessions.filter((session) => session.status === "Live").length >
+        0 ? (
+          sessions
+            .filter((session) => session.status === "Live")
+            .map((session) => (
+              <div
+                key={session.id}
+                className="border border-border p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm font-semibold">
+                        {session.subject}
+                      </h3>
+                      <StatusChip status="Live demo" />
+                    </div>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {session.code} · {session.id}
+                    </p>
+                  </div>
+
+                  <Button size="sm" asChild>
+                    <Link to="/teacher/live">
+                      <Activity className="mr-2 h-4 w-4" />
+                      Monitor attendance
+                    </Link>
+                  </Button>
+                </div>
+
+                <div className="mt-4 grid gap-3 text-xs text-muted-foreground sm:grid-cols-3">
+                  <span className="flex items-center gap-2">
+                    <Clock3 className="h-3.5 w-3.5" />
+                    {session.startTime} – {session.endTime}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {session.room}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Users className="h-3.5 w-3.5" />
+                    {session.present} / {session.enrolled} recorded
+                  </span>
+                </div>
+              </div>
+            ))
+        ) : (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            No active sessions in the demonstration list.
+          </p>
+        )}
+      </SectionCard>
+
+      {/* Session list */}
+      <SectionCard
+        title="All sessions"
+        description="Search and filter your scheduled and previous sessions."
+      >
+        <div className="space-y-4">
+          <div className="relative w-full sm:max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search subject, code or session ID"
+              className="pl-9"
+            />
           </div>
 
-          <Separator className="my-4" />
-
-          <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Attendance mode
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {attendanceModes.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => setMode(m.id)}
-                className={cn(
-                  "rounded-md border border-border bg-surface p-3 text-left transition-colors hover:bg-accent/40",
-                  mode === m.id && "border-border-strong bg-accent/50",
-                )}
+          <div className="flex flex-wrap gap-1">
+            {statusFilters.map((status) => (
+              <Button
+                key={status}
+                size="sm"
+                variant={
+                  statusFilter === status ? "default" : "outline"
+                }
+                onClick={() => setStatusFilter(status)}
               >
-                <p className="text-[13px] font-semibold text-foreground">{m.label}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{m.hint}</p>
-              </button>
+                {status}
+              </Button>
             ))}
           </div>
-        </SectionCard>
-
-        <div className="space-y-4">
-          <SectionCard title="Live session status" description={`${live.code} · ${live.time}`}>
-            <div className="grid grid-cols-2 gap-3">
-              <MetricCard label="Present" value={live.marked} />
-              <MetricCard label="Pending" value={live.strength - live.marked - 2} />
-              <MetricCard label="Rejected" value={2} />
-              <MetricCard label="Spoof alerts" value={1} icon={ShieldAlert} />
-            </div>
-            <div className="mt-4 rounded-md border border-border bg-surface-muted/60 p-3">
-              <div className="flex items-center justify-between text-[13px]">
-                <span className="inline-flex items-center gap-2 text-muted-foreground">
-                  <Timer className="size-4" /> Time remaining
-                </span>
-                <span className="font-semibold tabular-nums text-foreground">04:12</span>
-              </div>
-              <Progress value={42} className="mt-2 h-1.5" />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <Button size="sm" onClick={() => setSession("Live", "Attendance opened")}>
-                <PlayCircle /> Open
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSession("Paused", "Attendance paused")}>
-                <PauseCircle /> Pause
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSession("Live", "Attendance resumed")}>
-                <RotateCcw /> Resume
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSession("Closed", "Attendance closed")}>
-                <StopCircle /> Close
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSession("Live", "Attendance reopened")}>
-                <RefreshCw /> Reopen
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => toast.success("Window extended by 5 minutes")}
-              >
-                <Timer /> Extend
-              </Button>
-            </div>
-          </SectionCard>
         </div>
-      </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SectionCard
-          title="QR attendance"
-          description="Dynamic QR rotates every 15 seconds"
-          action={<StatusChip tone="info">Expires in 00:11</StatusChip>}
-        >
-          <div className="mx-auto max-w-[240px]">
-            <QrPlaceholder />
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Button size="sm" variant="outline" onClick={() => toast.success("QR regenerated")}>
-              <RefreshCw /> Refresh
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => toast.success("QR downloaded as PNG")}>
-              <Download /> Download
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setQrFull(true)}>
-              <Maximize2 /> Project
-            </Button>
-          </div>
-        </SectionCard>
+        <div className="mt-4 divide-y divide-border">
+          {filteredSessions.map((session) => {
+            const attendancePercentage =
+              session.enrolled > 0
+                ? Math.round(
+                    (session.present / session.enrolled) * 100,
+                  )
+                : 0;
 
-        <SectionCard
-          title="Attendance code"
-          description="Single-use secure code for this session"
-          action={<StatusChip tone="warning">Expires in 04:12</StatusChip>}
-        >
-          <div className="grid place-items-center rounded-md border border-border bg-surface-muted py-10">
-            <p className="font-mono text-4xl font-semibold tracking-[0.35em] text-foreground sm:text-5xl">
-              {code}
+            const isExpanded = selectedSession === session.id;
+
+            return (
+              <div key={session.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-medium">
+                        {session.subject}
+                      </p>
+                      <StatusChip status={session.status} />
+                    </div>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {session.code} · {session.id}
+                    </p>
+
+                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <CalendarDays className="h-3 w-3" />
+                        {formatDate(session.date)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock3 className="h-3 w-3" />
+                        {session.startTime} – {session.endTime}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {session.room}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setSelectedSession(
+                          isExpanded ? null : session.id,
+                        )
+                      }
+                    >
+                      {isExpanded ? "Hide details" : "View details"}
+                    </Button>
+
+                    {session.status === "Live" && (
+                      <Button size="sm" asChild>
+                        <Link to="/teacher/live">
+                          Monitor
+                          <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-4 grid gap-4 border-t border-border pt-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Enrolled students
+                      </p>
+                      <p className="mt-1 text-sm font-medium">
+                        {session.enrolled}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Present
+                      </p>
+                      <p className="mt-1 text-sm font-medium">
+                        {session.present}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Absent
+                      </p>
+                      <p className="mt-1 text-sm font-medium">
+                        {session.absent}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Recorded attendance
+                      </p>
+                      <p className="mt-1 text-sm font-medium">
+                        {attendancePercentage}%
+                      </p>
+                    </div>
+
+                    <div className="sm:col-span-2 lg:col-span-4">
+                      <p className="text-xs text-muted-foreground">
+                        Supported verification methods
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {session.methods.map((method) => (
+                          <StatusChip
+                            key={method}
+                            status={method}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {session.status === "Live" && (
+                      <div className="sm:col-span-2 lg:col-span-4">
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleEndSession(session.id)}
+                        >
+                          End demo session
+                        </Button>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          This only changes the local demonstration status.
+                        </p>
+                      </div>
+                    )}
+
+                    {session.status === "Completed" && (
+                      <div className="sm:col-span-2 lg:col-span-4">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to="/teacher/history">
+                            View attendance history
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {filteredSessions.length === 0 && (
+            <div className="py-10 text-center">
+              <CalendarDays className="mx-auto h-7 w-7 text-muted-foreground" />
+              <p className="mt-3 text-sm font-medium">
+                No sessions found
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Change the search term or selected status.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
+          Showing {filteredSessions.length} of {sessions.length} demonstration
+          sessions.
+        </div>
+      </SectionCard>
+
+      {/* Session creation placeholder */}
+      <SectionCard
+        title="Create a new session"
+        description="Session scheduling will be connected to the backend."
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium">
+              Schedule an attendance session
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">Read aloud in class · never share online</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Session creation requires an assigned subject, schedule,
+              classroom, and enrolled student list.
+            </p>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => toast.success("Attendance code copied")}
-            >
-              <Copy /> Copy
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const next = Math.random().toString(36).slice(2, 8).toUpperCase();
-                setCode(next);
-                toast.success("New code generated");
-              }}
-            >
-              <RefreshCw /> Refresh
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setCodeFull(true)}>
-              <Expand /> Fullscreen
-            </Button>
-          </div>
-        </SectionCard>
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create session
+          </Button>
+        </div>
+      </SectionCard>
+
+      <div className="border border-border p-4">
+        <p className="text-sm font-medium">
+          Backend integration requirements
+        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-relaxed text-muted-foreground">
+          <li>
+            Fetch sessions belonging only to the authenticated teacher.
+          </li>
+          <li>
+            Create sessions using an assigned subject and authorized schedule.
+          </li>
+          <li>
+            Receive live attendance events from the verification service.
+          </li>
+          <li>
+            End sessions through an authorized API and preserve audit logs.
+          </li>
+          <li>
+            Load historical attendance from the institutional database.
+          </li>
+        </ul>
       </div>
-
-      <Dialog open={qrFull} onOpenChange={setQrFull}>
-        <DialogContent className="max-w-2xl">
-          <DialogTitle className="text-center">
-            {live.code} · {live.room}
-          </DialogTitle>
-          <div className="mx-auto w-full max-w-md">
-            <QrPlaceholder />
-          </div>
-          <p className="text-center text-[13px] text-muted-foreground">
-            Rotating QR · refreshes every 15 seconds
-          </p>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={codeFull} onOpenChange={setCodeFull}>
-        <DialogContent className="max-w-2xl">
-          <DialogTitle className="text-center">Attendance code</DialogTitle>
-          <p className="py-10 text-center font-mono text-6xl font-semibold tracking-[0.3em] text-foreground sm:text-7xl">
-            {code}
-          </p>
-          <p className="text-center text-[13px] text-muted-foreground">Expires in 04:12</p>
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 }
