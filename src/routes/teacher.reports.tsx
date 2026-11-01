@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { FileSpreadsheet, FileText, Search, Table2 } from "lucide-react";
 import { PageHeader, SectionCard } from "@/components/argus/section";
 import { MetricCard } from "@/components/argus/metric-card";
-import { DemoDataNotice, EmptyState as _unused, ErrorState, LoadingState } from "@/components/argus/analytics/states";
+import { DemoDataNotice, LoadingState } from "@/components/argus/analytics/states";
 import { EmptyState } from "@/components/argus/empty-state";
 import { StatusChip } from "@/components/argus/status-chip";
 import { Button } from "@/components/ui/button";
