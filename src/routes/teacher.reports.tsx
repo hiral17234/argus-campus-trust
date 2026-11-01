@@ -239,11 +239,6 @@ function ReportsPage() {
       </SectionCard>
 
       <DemoDataNotice />
-      <ErrorState
-        className="hidden"
-        title=""
-        description=""
-      />
     </>
   );
 }
