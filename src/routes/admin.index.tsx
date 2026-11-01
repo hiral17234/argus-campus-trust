@@ -15,19 +15,18 @@ import {
 } from "@/components/ui/table";
 import {
   admin,
-  adminAnalyticsSummary,
-  departmentComparison,
+  correctionTone,
   departments,
   institution,
   institutionTrend,
   manualCorrections,
-  correctionTone,
   securityEvents,
   securityStatusTone,
   severityTone,
 } from "@/lib/admin-data";
+import { adminAnalyticsSummary } from "@/lib/analytics-data";
 
-export const Route = createFileRoute("/admin/")({
+import { departmentComparison } from "@/lib/admin-data";
   head: () => ({
     meta: [
       { title: "Dashboard — ARGUS Institution Admin" },
