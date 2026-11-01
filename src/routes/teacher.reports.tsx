@@ -1,244 +1,659 @@
-import { useMemo, useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { FileSpreadsheet, FileText, Search, Table2 } from "lucide-react";
-import { PageHeader, SectionCard } from "@/components/argus/section";
-import { MetricCard } from "@/components/argus/metric-card";
-import { DemoDataNotice, LoadingState } from "@/components/argus/analytics/states";
-import { EmptyState } from "@/components/argus/empty-state";
+import { useMemo, useState } from "react";
+import {
+  BarChart3,
+  CalendarDays,
+  Download,
+  FileSpreadsheet,
+  Filter,
+  GraduationCap,
+  Users,
+} from "lucide-react";
+
+import {
+  PageHeader,
+  SectionCard,
+} from "@/components/argus/section";
 import { StatusChip } from "@/components/argus/status-chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { toast } from "sonner";
-import {
-  ATTENDANCE_THRESHOLD,
-  dateRanges,
-  reportKinds,
-  reportRows,
-  riskFor,
-  type DateRangeKey,
-} from "@/lib/analytics-data";
-import { teacherAnalyticsSummary } from "@/lib/analytics-data";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/teacher/reports")({
-  head: () => ({
-    meta: [
-      { title: "Reports — ARGUS Faculty" },
-      { name: "description", content: "Generate and preview signed attendance, verification and appeal reports for your sections." },
-      { property: "og:title", content: "Reports — ARGUS Faculty" },
-      { property: "og:description", content: "Generate and preview signed attendance, verification and appeal reports for your sections." },
-    ],
-  }),
-  component: ReportsPage,
+  component: TeacherReports,
 });
 
-const teacherKinds = reportKinds.filter((k) => k.scope.includes("teacher"));
+type AttendanceRecord = {
+  id: string;
+  student: string;
+  rollNumber: string;
+  subject: string;
+  subjectCode: string;
+  date: string;
+  present: number;
+  absent: number;
+  late: number;
+  total: number;
+};
 
-const formats = [
-  { label: "Excel (.xlsx)", icon: FileSpreadsheet },
-  { label: "CSV (.csv)", icon: Table2 },
-  { label: "PDF (.pdf)", icon: FileText },
+const initialRecords: AttendanceRecord[] = [
+  {
+    id: "1",
+    student: "Aarav Sharma",
+    rollNumber: "MITS23CS041",
+    subject: "Data Structures and Algorithms",
+    subjectCode: "CS301",
+    date: "2026-10-31",
+    present: 18,
+    absent: 1,
+    late: 1,
+    total: 20,
+  },
+  {
+    id: "2",
+    student: "Priya Verma",
+    rollNumber: "MITS23CS056",
+    subject: "Data Structures and Algorithms",
+    subjectCode: "CS301",
+    date: "2026-10-31",
+    present: 19,
+    absent: 1,
+    late: 0,
+    total: 20,
+  },
+  {
+    id: "3",
+    student: "Rohan Gupta",
+    rollNumber: "MITS23CS063",
+    subject: "Database Management Systems",
+    subjectCode: "CS302",
+    date: "2026-10-30",
+    present: 16,
+    absent: 2,
+    late: 2,
+    total: 20,
+  },
+  {
+    id: "4",
+    student: "Ananya Singh",
+    rollNumber: "MITS23CS072",
+    subject: "Database Management Systems",
+    subjectCode: "CS302",
+    date: "2026-10-30",
+    present: 17,
+    absent: 2,
+    late: 1,
+    total: 20,
+  },
+  {
+    id: "5",
+    student: "Karan Patel",
+    rollNumber: "MITS23CS084",
+    subject: "Operating Systems",
+    subjectCode: "CS303",
+    date: "2026-10-29",
+    present: 14,
+    absent: 4,
+    late: 2,
+    total: 20,
+  },
+  {
+    id: "6",
+    student: "Meera Joshi",
+    rollNumber: "MITS23CS091",
+    subject: "Operating Systems",
+    subjectCode: "CS303",
+    date: "2026-10-29",
+    present: 19,
+    absent: 0,
+    late: 1,
+    total: 20,
+  },
+  {
+    id: "7",
+    student: "Dev Malhotra",
+    rollNumber: "MITS23CS102",
+    subject: "Computer Networks",
+    subjectCode: "CS304",
+    date: "2026-10-28",
+    present: 15,
+    absent: 3,
+    late: 2,
+    total: 20,
+  },
+  {
+    id: "8",
+    student: "Ishita Rao",
+    rollNumber: "MITS23CS118",
+    subject: "Computer Networks",
+    subjectCode: "CS304",
+    date: "2026-10-28",
+    present: 18,
+    absent: 1,
+    late: 1,
+    total: 20,
+  },
 ];
 
-function ReportsPage() {
-  const [kind, setKind] = useState(teacherKinds[0]!.key);
-  const [range, setRange] = useState<DateRangeKey>("month");
+const subjectOptions = [
+  "All subjects",
+  "Data Structures and Algorithms",
+  "Database Management Systems",
+  "Operating Systems",
+  "Computer Networks",
+];
+
+function formatDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+
+  return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function TeacherReports() {
+  const [records] = useState(initialRecords);
   const [subject, setSubject] = useState("All subjects");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState("2026-10-01");
+  const [endDate, setEndDate] = useState("2026-10-31");
+  const [generated, setGenerated] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    const t = setTimeout(() => setLoading(false), 400);
-    return () => clearTimeout(t);
-  }, [kind, range, subject]);
+  const filteredRecords = useMemo(() => {
+    const query = search.toLowerCase().trim();
 
-  const rows = useMemo(() => {
-    const filtered = reportRows.filter(
-      (r) =>
-        (subject === "All subjects" || r.subject.startsWith(subject)) &&
-        (search === "" ||
-          r.student.toLowerCase().includes(search.toLowerCase()) ||
-          r.roll.toLowerCase().includes(search.toLowerCase())),
+    return records.filter((record) => {
+      const matchesSubject =
+        subject === "All subjects" || record.subject === subject;
+
+      const matchesSearch =
+        record.student.toLowerCase().includes(query) ||
+        record.rollNumber.toLowerCase().includes(query) ||
+        record.subject.toLowerCase().includes(query) ||
+        record.subjectCode.toLowerCase().includes(query);
+
+      const matchesDate =
+        (!startDate || record.date >= startDate) &&
+        (!endDate || record.date <= endDate);
+
+      return matchesSubject && matchesSearch && matchesDate;
+    });
+  }, [records, subject, search, startDate, endDate]);
+
+  const totals = useMemo(() => {
+    return filteredRecords.reduce(
+      (accumulator, record) => ({
+        present: accumulator.present + record.present,
+        absent: accumulator.absent + record.absent,
+        late: accumulator.late + record.late,
+        total: accumulator.total + record.total,
+      }),
+      { present: 0, absent: 0, late: 0, total: 0 },
     );
-    return filtered;
-  }, [subject, search]);
+  }, [filteredRecords]);
 
-  const activeKind = teacherKinds.find((k) => k.key === kind)!;
-  const rangeLabel = dateRanges.find((d) => d.key === range)?.label ?? "";
+  const attendancePercentage =
+    totals.total > 0
+      ? Math.round(
+          ((totals.present + totals.late) / totals.total) * 100,
+        )
+      : 0;
+
+  const subjectSummary = useMemo(() => {
+    const grouped = new Map<
+      string,
+      {
+        name: string;
+        code: string;
+        present: number;
+        absent: number;
+        late: number;
+        total: number;
+      }
+    >();
+
+    filteredRecords.forEach((record) => {
+      const current = grouped.get(record.subjectCode) ?? {
+        name: record.subject,
+        code: record.subjectCode,
+        present: 0,
+        absent: 0,
+        late: 0,
+        total: 0,
+      };
+
+      current.present += record.present;
+      current.absent += record.absent;
+      current.late += record.late;
+      current.total += record.total;
+
+      grouped.set(record.subjectCode, current);
+    });
+
+    return Array.from(grouped.values()).map((item) => ({
+      ...item,
+      percentage:
+        item.total > 0
+          ? Math.round(
+              ((item.present + item.late) / item.total) * 100,
+            )
+          : 0,
+    }));
+  }, [filteredRecords]);
+
+  const exportCSV = () => {
+    const headers = [
+      "Student",
+      "Roll Number",
+      "Subject",
+      "Subject Code",
+      "Report Date",
+      "Present",
+      "Absent",
+      "Late",
+      "Total Sessions",
+      "Attendance Percentage",
+    ];
+
+    const rows = filteredRecords.map((record) => [
+      record.student,
+      record.rollNumber,
+      record.subject,
+      record.subjectCode,
+      record.date,
+      record.present,
+      record.absent,
+      record.late,
+      record.total,
+      `${Math.round(
+        ((record.present + record.late) / record.total) * 100,
+      )}%`,
+    ]);
+
+    const csv = [headers, ...rows]
+      .map((row) =>
+        row
+          .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+          .join(","),
+      )
+      .join("\n");
+
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = "argus-attendance-report-demo.csv";
+    anchor.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const resetFilters = () => {
+    setSubject("All subjects");
+    setSearch("");
+    setStartDate("2026-10-01");
+    setEndDate("2026-10-31");
+    setGenerated(false);
+  };
+
+  const generateReport = () => {
+    if (startDate && endDate && startDate > endDate) {
+      alert("Start date cannot be later than end date.");
+      return;
+    }
+
+    setGenerated(true);
+  };
 
   return (
-    <>
+    <div className="space-y-6">
       <PageHeader
-        title="Reports"
-        description="Signed, exportable attendance records with verification evidence for every entry."
+        title="Attendance Reports"
+        description="Generate and review attendance reports for your assigned subjects and students."
       />
 
-      <SectionCard title="Report catalogue" description="Select a report to configure and preview it">
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {teacherKinds.map((k) => (
-            <button
-              key={k.key}
-              type="button"
-              onClick={() => setKind(k.key)}
-              className={cn(
-                "rounded-md border p-3 text-left transition-colors",
-                kind === k.key
-                  ? "border-secondary bg-secondary/5"
-                  : "border-border bg-surface hover:bg-surface-muted/60",
-              )}
-            >
-              <p className="text-[13px] font-semibold text-foreground">{k.label}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{k.description}</p>
-            </button>
-          ))}
+      {/* Demo notice */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-muted/20 p-4">
+        <div className="flex items-start gap-3">
+          <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <div>
+            <p className="text-sm font-medium">
+              Demonstration report data
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Report records and statistics are sample values, not actual
+              institutional attendance data.
+            </p>
+          </div>
         </div>
-      </SectionCard>
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Attendance %" value={teacherAnalyticsSummary.averageAttendance} unit="%" progress={teacherAnalyticsSummary.averageAttendance} />
-        <MetricCard label="Sessions conducted" value={teacherAnalyticsSummary.sessionsConducted} hint="This semester" />
-        <MetricCard label="Below threshold" value={teacherAnalyticsSummary.belowThreshold} hint={`${ATTENDANCE_THRESHOLD}% minimum`} />
-        <MetricCard label="Pending appeals" value={teacherAnalyticsSummary.pendingAppeals} hint="Awaiting your review" />
+        <StatusChip status="Demo data" />
       </div>
 
-      <SectionCard title="Filters" description="Preview updates with the selected filters">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="report-range">Period</Label>
-            <Select value={range} onValueChange={(v) => setRange(v as DateRangeKey)}>
-              <SelectTrigger id="report-range"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {dateRanges.map((d) => (
-                  <SelectItem key={d.key} value={d.key}>{d.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="report-subject">Subject</Label>
-            <Select value={subject} onValueChange={setSubject}>
-              <SelectTrigger id="report-subject"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {["All subjects", "CS3021", "CS3110", "CS3402"].map((s) => (
-                  <SelectItem key={s} value={s}>{s === "All subjects" ? s : `${s}`}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="report-search">Search student</Label>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="report-search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Name or roll number"
-                className="pl-8"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          {formats.map((f) => (
-            <Button
-              key={f.label}
-              variant="outline"
-              className="justify-start gap-2"
-              onClick={() =>
-                toast.success("Report queued", {
-                  description: `${activeKind.label} · ${rangeLabel} · ${f.label}`,
-                })
-              }
-            >
-              <f.icon className="size-4" /> {f.label}
-            </Button>
-          ))}
-        </div>
-        <p className="mt-3 text-[11px] text-muted-foreground">
-          {activeKind.label} · {rangeLabel} · Preview shows {rows.length} of {reportRows.length} records
-        </p>
-      </SectionCard>
-
+      {/* Report filters */}
       <SectionCard
-        title="Report preview"
-        description={`${activeKind.description} — every record carries its verification evidence`}
-        bodyClassName="p-0"
+        title="Report configuration"
+        description="Choose the reporting period and subject."
       >
-        {loading ? (
-          <div className="p-4 sm:p-5">
-            <LoadingState rows={5} label="Building report preview…" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="space-y-2">
+            <Label htmlFor="report-subject">Subject</Label>
+            <select
+              id="report-subject"
+              value={subject}
+              onChange={(event) => setSubject(event.target.value)}
+              className="h-10 w-full border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            >
+              {subjectOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
-        ) : rows.length === 0 ? (
-          <div className="p-4 sm:p-5">
-            <EmptyState
-              icon={Search}
-              title="No records match the current filters"
-              description="Try clearing the search box or switching the subject and period filters."
-              action={
-                <Button variant="outline" size="sm" onClick={() => { setSearch(""); setSubject("All subjects"); }}>
-                  Reset filters
-                </Button>
-              }
+
+          <div className="space-y-2">
+            <Label htmlFor="start-date">Start date</Label>
+            <Input
+              id="start-date"
+              type="date"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
             />
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Roll no.</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead className="text-right">Sessions</TableHead>
-                  <TableHead className="text-right">Present</TableHead>
-                  <TableHead className="text-right">Late</TableHead>
-                  <TableHead className="text-right">Absent</TableHead>
-                  <TableHead className="text-right">Attendance</TableHead>
-                  <TableHead className="text-right">Risk</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((r) => {
-                  const risk = riskFor(r.attendance);
-                  return (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">{r.student}</TableCell>
-                      <TableCell className="tabular-nums">{r.roll}</TableCell>
-                      <TableCell>{r.subject}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.sessions}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.present}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.late}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.absent}</TableCell>
-                      <TableCell className="text-right tabular-nums font-semibold">
-                        {r.attendance}%
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <StatusChip tone={risk === "High Risk" ? "danger" : risk === "Attention" ? "warning" : "success"}>
-                          {risk}
-                        </StatusChip>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+
+          <div className="space-y-2">
+            <Label htmlFor="end-date">End date</Label>
+            <Input
+              id="end-date"
+              type="date"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
+            />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="student-search">Student search</Label>
+            <Input
+              id="student-search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Name or roll number"
+            />
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+          <Button size="sm" onClick={generateReport}>
+            <Filter className="mr-2 h-4 w-4" />
+            Generate report
+          </Button>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={resetFilters}
+          >
+            Reset filters
+          </Button>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={exportCSV}
+            disabled={filteredRecords.length === 0}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
+        </div>
+      </SectionCard>
+
+      {/* Report summary */}
+      <section>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold">Report summary</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Calculated from the currently filtered records.
+            </p>
+          </div>
+
+          {generated && (
+            <StatusChip status="Report generated locally" />
+          )}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            {
+              label: "Students listed",
+              value: filteredRecords.length,
+              icon: Users,
+            },
+            {
+              label: "Present sessions",
+              value: totals.present,
+              icon: GraduationCap,
+            },
+            {
+              label: "Absent sessions",
+              value: totals.absent,
+              icon: CalendarDays,
+            },
+            {
+              label: "Attendance rate",
+              value: `${attendancePercentage}%`,
+              icon: BarChart3,
+            },
+          ].map((metric) => {
+            const Icon = metric.icon;
+
+            return (
+              <div
+                key={metric.label}
+                className="border border-border bg-card p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    {metric.label}
+                  </p>
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <p className="mt-3 text-2xl font-semibold tabular-nums">
+                  {metric.value}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Subject-wise summary */}
+      <SectionCard
+        title="Subject-wise attendance"
+        description="Attendance distribution across the selected subjects."
+      >
+        {subjectSummary.length > 0 ? (
+          <div className="space-y-5">
+            {subjectSummary.map((item) => (
+              <div key={item.code}>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium">{item.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {item.code} · {item.total} recorded sessions
+                    </p>
+                  </div>
+
+                  <p className="text-sm font-semibold tabular-nums">
+                    {item.percentage}%
+                  </p>
+                </div>
+
+                <div className="mt-2 flex h-2 w-full overflow-hidden bg-muted">
+                  <div
+                    className="h-full bg-foreground"
+                    style={{
+                      width: `${(item.present / item.total) * 100}%`,
+                    }}
+                  />
+                  <div
+                    className="h-full bg-muted-foreground/50"
+                    style={{
+                      width: `${(item.late / item.total) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                <div className="mt-2 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                  <span>Present: {item.present}</span>
+                  <span>Late: {item.late}</span>
+                  <span>Absent: {item.absent}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyReport />
         )}
       </SectionCard>
 
-      <DemoDataNotice />
-    </>
+      {/* Detailed report */}
+      <SectionCard
+        title="Student attendance breakdown"
+        description="Detailed attendance records for the selected report period."
+        action={
+          <span className="text-xs text-muted-foreground">
+            {filteredRecords.length} records
+          </span>
+        }
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-muted-foreground">
+                <th className="px-3 py-3 font-medium">Student</th>
+                <th className="px-3 py-3 font-medium">Subject</th>
+                <th className="px-3 py-3 font-medium">Report date</th>
+                <th className="px-3 py-3 text-center font-medium">Present</th>
+                <th className="px-3 py-3 text-center font-medium">Absent</th>
+                <th className="px-3 py-3 text-center font-medium">Late</th>
+                <th className="px-3 py-3 font-medium">Attendance</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-border">
+              {filteredRecords.map((record) => {
+                const percentage = Math.round(
+                  ((record.present + record.late) / record.total) * 100,
+                );
+
+                return (
+                  <tr key={record.id}>
+                    <td className="px-3 py-3">
+                      <p className="font-medium">{record.student}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {record.rollNumber}
+                      </p>
+                    </td>
+
+                    <td className="px-3 py-3">
+                      <p className="text-xs">{record.subject}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {record.subjectCode}
+                      </p>
+                    </td>
+
+                    <td className="px-3 py-3 text-xs text-muted-foreground">
+                      {formatDate(record.date)}
+                    </td>
+
+                    <td className="px-3 py-3 text-center tabular-nums">
+                      {record.present}
+                    </td>
+
+                    <td className="px-3 py-3 text-center tabular-nums">
+                      {record.absent}
+                    </td>
+
+                    <td className="px-3 py-3 text-center tabular-nums">
+                      {record.late}
+                    </td>
+
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium tabular-nums">
+                          {percentage}%
+                        </span>
+                        <StatusChip
+                          status={
+                            percentage >= 75
+                              ? "On track"
+                              : "Below threshold"
+                          }
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {filteredRecords.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-3 py-10 text-center text-sm text-muted-foreground"
+                  >
+                    No records match the selected filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </SectionCard>
+
+      {/* Report notes */}
+      <div className="border border-border p-4">
+        <p className="text-sm font-medium">Report calculation notes</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-relaxed text-muted-foreground">
+          <li>
+            Attendance rate is calculated as (Present + Late) / Total
+            sessions.
+          </li>
+          <li>
+            The 75% threshold is illustrative and should be configurable
+            according to institutional attendance policy.
+          </li>
+          <li>
+            Exported CSV contains the currently filtered demonstration
+            records only.
+          </li>
+          <li>
+            Official reports must use backend-authoritative records and
+            server-side access control.
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function EmptyReport() {
+  return (
+    <div className="py-10 text-center">
+      <FileSpreadsheet className="mx-auto h-7 w-7 text-muted-foreground" />
+      <p className="mt-3 text-sm font-medium">No report data available</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Adjust the selected filters to view records.
+      </p>
+    </div>
   );
 }
