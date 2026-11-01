@@ -1,7 +1,14 @@
+
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download, Search, SlidersHorizontal } from "lucide-react";
-import { PageHeader, SectionCard, DetailRow } from "@/components/argus/section";
+import { toast } from "sonner";
+
+import {
+  PageHeader,
+  SectionCard,
+  DetailRow,
+} from "@/components/argus/section";
 import { StatusChip } from "@/components/argus/status-chip";
 import { EmptyState } from "@/components/argus/empty-state";
 import { Button } from "@/components/ui/button";
@@ -23,7 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
+
 import {
   attendanceRecords,
   resultTone,
@@ -34,15 +41,11 @@ import {
 export const Route = createFileRoute("/student/history")({
   head: () => ({
     meta: [
-      { title: "Attendance History — ARGUS" },
+      { title: "Attendance History | ARGUS" },
       {
         name: "description",
-        content: "Filter, search and export your verified attendance records in ARGUS.",
-      },
-      { property: "og:title", content: "Attendance History — ARGUS" },
-      {
-        property: "og:description",
-        content: "Daily, weekly, monthly and semester attendance with full verification detail.",
+        content:
+          "View, filter and export your attendance records and verification details.",
       },
     ],
   }),
@@ -51,71 +54,180 @@ export const Route = createFileRoute("/student/history")({
 
 const periods = ["daily", "weekly", "monthly", "semester"] as const;
 
+type Period = (typeof periods)[number];
+
+function escapeCSV(value: string | number) {
+  const text = String(value ?? "");
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function exportAttendance(records: AttendanceRecord[]) {
+  if (records.length === 0) {
+    toast.error("No attendance records to export.");
+    return;
+  }
+
+  const headers = [
+    "Record ID",
+    "Date",
+    "Day",
+    "Time",
+    "Subject",
+    "Subject Code",
+    "Teacher",
+    "Attendance Method",
+    "Confidence",
+    "Risk",
+    "Result",
+    "Location Status",
+    "Device Status",
+  ];
+
+  const rows = records.map((record) => [
+    record.id,
+    record.date,
+    record.day,
+    record.time,
+    record.subject,
+    record.code,
+    record.teacher,
+    record.method,
+    record.confidence > 0 ? `${record.confidence}%` : "Not captured",
+    record.risk,
+    record.result,
+    record.location,
+    record.device,
+  ]);
+
+  const csv = [
+    headers.map(escapeCSV).join(","),
+    ...rows.map((row) => row.map(escapeCSV).join(",")),
+  ].join("\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = "argus-attendance-history.csv";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(url);
+
+  toast.success("Attendance history exported.", {
+    description: `${records.length} records downloaded as CSV.`,
+  });
+}
+
 function HistoryPage() {
-  const [period, setPeriod] = useState<string>("semester");
+  const [period, setPeriod] = useState<Period>("semester");
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<AttendanceRecord | null>(null);
+  const [selected, setSelected] =
+    useState<AttendanceRecord | null>(null);
 
   const rows = useMemo(() => {
-    const order = periods.indexOf(period as (typeof periods)[number]);
-    return attendanceRecords.filter((r) => {
-      const withinPeriod = periods.indexOf(r.period) <= order;
-      const matches =
-        query.trim().length === 0 ||
-        `${r.subject} ${r.code} ${r.teacher} ${r.date}`.toLowerCase().includes(query.toLowerCase());
-      return withinPeriod && matches;
+    const selectedPeriodIndex = periods.indexOf(period);
+
+    return attendanceRecords.filter((record) => {
+      const recordPeriodIndex = periods.indexOf(
+        record.period as Period,
+      );
+
+      const withinPeriod =
+        recordPeriodIndex !== -1 &&
+        recordPeriodIndex <= selectedPeriodIndex;
+
+      const searchText = [
+        record.subject,
+        record.code,
+        record.teacher,
+        record.date,
+        record.method,
+        record.result,
+        record.risk,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch = searchText.includes(
+        query.trim().toLowerCase(),
+      );
+
+      return withinPeriod && matchesSearch;
     });
   }, [period, query]);
 
   return (
-    <>
-      <PageHeader
-        title="Attendance history"
-        description="Every record includes the verification evidence used to accept or reject it."
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              toast.success("Export requested", {
-                description: "A signed PDF will be emailed to your college address.",
-              })
-            }
-          >
-            <Download />
-            Request export
-          </Button>
-        }
-      />
+    <div className="space-y-6">
+      <div>
+        <Link
+          to="/student"
+          className="mb-3 inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+        >
+          <span aria-hidden="true">←</span>
+          Student dashboard
+        </Link>
 
+        <PageHeader
+          title="Attendance history"
+          description="Review your attendance records and the verification evidence associated with each session."
+          actions={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportAttendance(rows)}
+            >
+              <Download className="size-4" />
+              Export CSV
+            </Button>
+          }
+        />
+      </div>
+
+      {/* Filters */}
       <SectionCard bodyClassName="p-3 sm:p-4">
         <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
-          <Tabs value={period} onValueChange={setPeriod}>
+          <Tabs
+            value={period}
+            onValueChange={(value) => setPeriod(value as Period)}
+          >
             <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-              {periods.map((p) => (
-                <TabsTrigger key={p} value={p} className="capitalize">
-                  {p}
+              {periods.map((item) => (
+                <TabsTrigger
+                  key={item}
+                  value={item}
+                  className="capitalize"
+                >
+                  {item}
                 </TabsTrigger>
               ))}
             </TabsList>
           </Tabs>
+
           <div className="relative min-w-0">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+
             <Input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by subject, code, teacher or date"
-              className="pl-9"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search by subject, code, teacher, date or result"
+              className="pl-9 rounded-none"
             />
           </div>
         </div>
       </SectionCard>
 
+      {/* Attendance records */}
       {rows.length === 0 ? (
         <EmptyState
           icon={SlidersHorizontal}
-          title="No attendance records match your filters"
-          description="Try a wider period or clear the search query to see more records."
+          title="No attendance records found"
+          description="Try selecting a wider period or clearing your search query."
           action={
             <Button
               variant="outline"
@@ -133,8 +245,8 @@ function HistoryPage() {
         <>
           {/* Desktop table */}
           <SectionCard
-            title={`${rows.length} records`}
-            description="Select a record to view full verification detail"
+            title={`${rows.length} attendance records`}
+            description="Select a record to inspect its verification details."
             bodyClassName="p-0"
             className="hidden md:block"
           >
@@ -144,37 +256,63 @@ function HistoryPage() {
                   <TableHead className="pl-5">Date</TableHead>
                   <TableHead>Subject</TableHead>
                   <TableHead>Method</TableHead>
-                  <TableHead className="text-right">Confidence</TableHead>
+                  <TableHead className="text-right">
+                    Confidence
+                  </TableHead>
                   <TableHead>Risk</TableHead>
-                  <TableHead className="pr-5 text-right">Result</TableHead>
+                  <TableHead className="pr-5 text-right">
+                    Result
+                  </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
-                {rows.map((r) => (
+                {rows.map((record) => (
                   <TableRow
-                    key={r.id}
+                    key={record.id}
                     className="cursor-pointer border-border"
-                    onClick={() => setSelected(r)}
+                    onClick={() => setSelected(record)}
                   >
                     <TableCell className="pl-5">
-                      <span className="block text-[13px] font-medium text-foreground">{r.date}</span>
-                      <span className="block text-[11px] text-muted-foreground">{r.time}</span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="block text-[13px] text-foreground">{r.subject}</span>
-                      <span className="block font-mono text-[11px] text-muted-foreground">
-                        {r.code} · {r.teacher}
+                      <span className="block text-[13px] font-medium text-foreground">
+                        {record.date}
+                      </span>
+
+                      <span className="block text-[11px] text-muted-foreground">
+                        {record.time}
                       </span>
                     </TableCell>
-                    <TableCell className="text-[13px] text-muted-foreground">{r.method}</TableCell>
-                    <TableCell className="text-right font-mono text-[13px] tabular-nums text-foreground">
-                      {r.confidence > 0 ? `${r.confidence}%` : "—"}
-                    </TableCell>
+
                     <TableCell>
-                      <StatusChip tone={riskTone[r.risk]}>{r.risk}</StatusChip>
+                      <span className="block text-[13px] text-foreground">
+                        {record.subject}
+                      </span>
+
+                      <span className="block font-mono text-[11px] text-muted-foreground">
+                        {record.code} · {record.teacher}
+                      </span>
                     </TableCell>
+
+                    <TableCell className="text-[13px] text-muted-foreground">
+                      {record.method}
+                    </TableCell>
+
+                    <TableCell className="text-right font-mono text-[13px] tabular-nums text-foreground">
+                      {record.confidence > 0
+                        ? `${record.confidence}%`
+                        : "—"}
+                    </TableCell>
+
+                    <TableCell>
+                      <StatusChip tone={riskTone[record.risk]}>
+                        {record.risk}
+                      </StatusChip>
+                    </TableCell>
+
                     <TableCell className="pr-5 text-right">
-                      <StatusChip tone={resultTone[r.result]}>{r.result}</StatusChip>
+                      <StatusChip tone={resultTone[record.result]}>
+                        {record.result}
+                      </StatusChip>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -182,35 +320,52 @@ function HistoryPage() {
             </Table>
           </SectionCard>
 
-          {/* Mobile list */}
+          {/* Mobile records */}
           <div className="space-y-2.5 md:hidden">
-            {rows.map((r) => (
+            {rows.map((record) => (
               <button
-                key={r.id}
-                onClick={() => setSelected(r)}
-                className="w-full rounded-md border border-border bg-card p-3.5 text-left shadow-xs active:bg-accent"
+                key={record.id}
+                type="button"
+                onClick={() => setSelected(record)}
+                className="w-full border border-border bg-card p-3.5 text-left transition-colors hover:bg-muted/20"
               >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-semibold text-foreground">{r.subject}</p>
+                    <p className="truncate text-[13px] font-semibold text-foreground">
+                      {record.subject}
+                    </p>
+
                     <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
-                      {r.date} · {r.time}
+                      {record.date} · {record.time}
+                    </p>
+
+                    <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+                      {record.code}
                     </p>
                   </div>
-                  <StatusChip tone={resultTone[r.result]}>{r.result}</StatusChip>
+
+                  <StatusChip tone={resultTone[record.result]}>
+                    {record.result}
+                  </StatusChip>
                 </div>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
+
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   <StatusChip tone="neutral" dot={false}>
-                    {r.method}
+                    {record.method}
                   </StatusChip>
-                  <StatusChip tone={riskTone[r.risk]} dot={false}>
-                    Risk {r.risk}
+
+                  <StatusChip
+                    tone={riskTone[record.risk]}
+                    dot={false}
+                  >
+                    Risk: {record.risk}
                   </StatusChip>
-                  {r.confidence > 0 ? (
+
+                  {record.confidence > 0 && (
                     <StatusChip tone="neutral" dot={false}>
-                      {r.confidence}%
+                      {record.confidence}%
                     </StatusChip>
-                  ) : null}
+                  )}
                 </div>
               </button>
             ))}
@@ -218,72 +373,148 @@ function HistoryPage() {
         </>
       )}
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
+      {/* Record detail dialog */}
+      <Dialog
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      >
+        <DialogContent className="max-w-md rounded-none">
           <DialogHeader>
-            <DialogTitle>Attendance detail</DialogTitle>
+            <DialogTitle>Attendance details</DialogTitle>
+
             <DialogDescription>
-              {selected ? `${selected.subject} · ${selected.code}` : ""}
+              {selected
+                ? `${selected.subject} · ${selected.code}`
+                : "Verification record information"}
             </DialogDescription>
           </DialogHeader>
-          {selected ? (
+
+          {selected && (
             <div className="max-h-[60vh] overflow-y-auto">
-              <DetailRow label="Date" value={`${selected.date} · ${selected.day}`} />
-              <DetailRow label="Subject" value={selected.subject} />
-              <DetailRow label="Teacher" value={selected.teacher} />
-              <DetailRow label="Time" value={selected.time} />
-              <DetailRow label="Attendance method" value={selected.method} />
+              <DetailRow
+                label="Record ID"
+                value={
+                  <span className="font-mono text-xs">
+                    {selected.id}
+                  </span>
+                }
+              />
+
+              <DetailRow
+                label="Date"
+                value={`${selected.date} · ${selected.day}`}
+              />
+
+              <DetailRow
+                label="Subject"
+                value={selected.subject}
+              />
+
+              <DetailRow
+                label="Subject code"
+                value={selected.code}
+              />
+
+              <DetailRow
+                label="Teacher"
+                value={selected.teacher}
+              />
+
+              <DetailRow
+                label="Time"
+                value={selected.time}
+              />
+
+              <DetailRow
+                label="Attendance method"
+                value={selected.method}
+              />
+
               <DetailRow
                 label="Confidence score"
                 value={
                   <span className="font-mono">
-                    {selected.confidence > 0 ? `${selected.confidence}%` : "Not captured"}
+                    {selected.confidence > 0
+                      ? `${selected.confidence}%`
+                      : "Not captured"}
                   </span>
                 }
               />
+
               <DetailRow
                 label="Location status"
                 value={
-                  <StatusChip tone={selected.location === "Verified" ? "success" : "warning"}>
+                  <StatusChip
+                    tone={
+                      selected.location === "Verified"
+                        ? "success"
+                        : "warning"
+                    }
+                  >
                     {selected.location}
                   </StatusChip>
                 }
               />
+
               <DetailRow
                 label="Device status"
                 value={
-                  <StatusChip tone={selected.device === "Trusted" ? "success" : "warning"}>
+                  <StatusChip
+                    tone={
+                      selected.device === "Trusted"
+                        ? "success"
+                        : "warning"
+                    }
+                  >
                     {selected.device}
                   </StatusChip>
                 }
               />
+
               <DetailRow
                 label="Risk status"
-                value={<StatusChip tone={riskTone[selected.risk]}>{selected.risk}</StatusChip>}
+                value={
+                  <StatusChip tone={riskTone[selected.risk]}>
+                    {selected.risk}
+                  </StatusChip>
+                }
               />
+
               <DetailRow
                 label="Verification result"
-                value={<StatusChip tone={resultTone[selected.result]}>{selected.result}</StatusChip>}
+                value={
+                  <StatusChip tone={resultTone[selected.result]}>
+                    {selected.result}
+                  </StatusChip>
+                }
               />
             </div>
-          ) : null}
+          )}
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSelected(null)}>
+            <Button
+              variant="outline"
+              onClick={() => setSelected(null)}
+            >
               Close
             </Button>
-            <Button
-              onClick={() => {
-                setSelected(null);
-                toast.info("Appeal draft created", {
-                  description: "Complete the appeal form to submit it for review.",
-                });
-              }}
-            >
-              Raise appeal
+
+            <Button asChild>
+              <Link to="/student/appeals">
+                Raise appeal
+              </Link>
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Attendance history currently uses the frontend demonstration
+        dataset. Live records, verification evidence and export
+        authorization will be connected to the ARGUS backend.
+      </p>
+    </div>
   );
 }
